@@ -68,7 +68,7 @@ export default function CartDrawer({
         <div className="drawer-header">
           <div>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 16, letterSpacing: '0.15em' }}>
-              ATELIER BAG ({items.reduce((c, i) => c + i.quantity, 0)})
+              ATELIER CART ({items.reduce((c, i) => c + i.quantity, 0)})
             </h2>
           </div>
           <button onClick={onClose} className="btn-icon" style={{ width: 36, height: 36 }}>

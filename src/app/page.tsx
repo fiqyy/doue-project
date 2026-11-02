@@ -239,10 +239,8 @@ export default function HomePage() {
   const categories = [
     { id: 'all', label: 'All Pieces' },
     { id: 'outerwear', label: 'Outerwear' },
-    { id: 'tailoring', label: 'Tailoring' },
     { id: 'knitwear', label: 'Knitwear' },
     { id: 'trousers', label: 'Trousers' },
-    { id: 'footwear', label: 'Footwear' },
     { id: 'leather', label: 'Leather Goods' }
   ];
 
