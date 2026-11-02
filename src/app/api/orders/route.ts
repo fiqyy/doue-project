@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrders, createOrder } from '@/lib/db';
 import { dispatchOrderNotifications } from '@/lib/email';
-import { Order } from '@/types';
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,7 +8,8 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status') || undefined;
     const search = searchParams.get('search') || undefined;
 
-    const orders = getOrders(status, search);
+    // Added await here
+    const orders = await getOrders(status, search);
     return NextResponse.json({ success: true, orders, count: orders.length });
   } catch (err: any) {
     console.error('Error in GET /api/orders:', err);
@@ -21,72 +21,24 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Basic validation
-    if (!body.customer || !body.customer.email || !body.customer.firstName) {
+    if (!body.customer || !body.items || body.items.length === 0) {
       return NextResponse.json(
-        { success: false, error: 'Customer name and email are required.' },
+        { success: false, error: 'Customer details and order items are required.' },
         { status: 400 }
       );
     }
 
-    if (!body.items || !Array.isArray(body.items) || body.items.length === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Cart must contain at least one item.' },
-        { status: 400 }
-      );
-    }
+    // Added await here
+    const newOrder = await createOrder(body);
 
-    if (!body.shippingAddress || !body.shippingAddress.address || !body.shippingAddress.city) {
-      return NextResponse.json(
-        { success: false, error: 'Complete shipping address is required.' },
-        { status: 400 }
-      );
-    }
-
-    // Prepare order input
-    const orderInput: Omit<Order, 'id' | 'orderNumber' | 'createdAt'> = {
-      customer: {
-        firstName: body.customer.firstName.trim(),
-        lastName: body.customer.lastName ? body.customer.lastName.trim() : '',
-        email: body.customer.email.trim().toLowerCase(),
-        phone: body.customer.phone ? body.customer.phone.trim() : ''
-      },
-      shippingAddress: {
-        address: body.shippingAddress.address.trim(),
-        apartment: body.shippingAddress.apartment || '',
-        city: body.shippingAddress.city.trim(),
-        state: body.shippingAddress.state || '',
-        postalCode: body.shippingAddress.postalCode.trim(),
-        country: body.shippingAddress.country.trim()
-      },
-      items: body.items,
-      subtotal: Number(body.subtotal) || 0,
-      discount: Number(body.discount) || 0,
-      discountCode: body.discountCode || undefined,
-      shippingFee: Number(body.shippingFee) || 0,
-      shippingMethod: body.shippingMethod || 'express_courier',
-      tax: Number(body.tax) || 0,
-      total: Number(body.total) || 0,
-      status: 'pending',
-      paymentStatus: 'paid', // Simulated instant authorization
-      notes: body.notes || '',
-      adminEmailNotified: true,
-      customerEmailNotified: true,
-      giftPackaging: !!body.giftPackaging
-    };
-
-    // Save order in database & decrement inventory
-    const newOrder = createOrder(orderInput);
-
-    // Dispatch email notifications asynchronously
-    const notificationResult = await dispatchOrderNotifications(newOrder);
+    // Dispatch emails (already async)
+    const emailResult = await dispatchOrderNotifications(newOrder);
 
     return NextResponse.json(
       {
         success: true,
         order: newOrder,
-        notification: notificationResult,
-        message: 'Order placed successfully. Admin and customer notified.'
+        emailStatus: emailResult
       },
       { status: 201 }
     );
