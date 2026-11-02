@@ -148,7 +148,7 @@ export default function ProductDetailModal({
               {product.description}
             </p>
 
-            {/* Color Selection */}
+            {/* Color Selection with Auto Image Switching */}
             {product.colors && product.colors.length > 0 && (
               <div style={{ marginBottom: 20 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 8 }}>
@@ -156,10 +156,16 @@ export default function ProductDetailModal({
                   <span style={{ color: 'var(--text-primary)' }}>{selectedColor}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                  {product.colors.map((c) => (
+                  {product.colors.map((c, index) => (
                     <button
                       key={c.name}
-                      onClick={() => setSelectedColor(c.name)}
+                      onClick={() => {
+                        setSelectedColor(c.name);
+                        // Automatically switch to the corresponding image index if it exists
+                        if (product.images[index]) {
+                          setActiveImageIdx(index);
+                        }
+                      }}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
