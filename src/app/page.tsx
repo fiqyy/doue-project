@@ -727,7 +727,6 @@ export default function HomePage() {
         isOpen={isProductModalOpen}
         onClose={() => setIsProductModalOpen(false)}
         onAddToCart={handleAddToCart}
-        initial3D={productModalInitial3D}
       />
 
       {/* Shopping Cart Drawer */}
