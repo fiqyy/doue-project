@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const order = getOrderById(params.id);
+    const order = await getOrderById(params.id);
     if (!order) {
       return NextResponse.json({ success: false, error: 'Order reference not found' }, { status: 404 });
     }
@@ -28,7 +28,7 @@ export async function PATCH(
       return NextResponse.json({ success: false, error: 'Status is required' }, { status: 400 });
     }
 
-    const updated = updateOrderStatus(params.id, status, trackingNumber, carrier);
+    const updated = await updateOrderStatus(params.id, status, trackingNumber, carrier);
     if (!updated) {
       return NextResponse.json({ success: false, error: 'Order not found' }, { status: 404 });
     }
