@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ShoppingBag, Heart, Shield, Search, Menu, X } from 'lucide-react';
+import { ShoppingBag, Heart, Search, Menu, X } from 'lucide-react';
 import { CartItem } from '@/types';
 
 interface HeaderProps {
@@ -33,36 +33,49 @@ export default function Header({
 
   return (
     <>
-      <header className="header-glass">
-        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+      <header className="header-glass" style={{ position: 'sticky', top: 0, zIndex: 40, width: '100%' }}>
+        <div
+          className="container header-container"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+            height: '64px',
+            padding: '0 12px'
+          }}
+        >
 
-          {/* Mobile Menu Button */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          {/* Left Section: Menu Button + Brand Title */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="btn-icon"
-              style={{ display: 'flex' }}
+              className="btn-icon mobile-menu-btn"
               title="Toggle Menu"
+              style={{ padding: '8px', flexShrink: 0 }}
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
 
             {/* Brand Title */}
-            <Link href="/" style={{ display: 'flex', flexDirection: 'column', textDecoration: 'none' }}>
-              <span style={{
+            <Link href="/" style={{ display: 'flex', flexDirection: 'column', textDecoration: 'none', minWidth: 0, overflow: 'hidden' }}>
+              <span className="brand-title" style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: '20px',
+                fontSize: '15px',
                 fontWeight: 600,
-                letterSpacing: '0.25em',
+                letterSpacing: '0.15em',
                 color: 'var(--text-primary)',
-                textTransform: 'uppercase'
+                textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
               }}>
                 DOUE Project
               </span>
-              <span style={{
+              <span className="brand-subtitle" style={{
                 fontFamily: 'var(--font-mono)',
-                fontSize: '9px',
-                letterSpacing: '0.35em',
+                fontSize: '7px',
+                letterSpacing: '0.25em',
                 color: 'var(--text-muted)',
                 textTransform: 'uppercase',
                 marginTop: -2
@@ -73,67 +86,56 @@ export default function Header({
           </div>
 
           {/* Desktop Nav Links */}
-          <nav style={{ display: 'none', alignItems: 'center', gap: 32 }} className="desktop-nav">
-            <a href="#collection" style={{ fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+          <nav className="desktop-nav" style={{ display: 'none', alignItems: 'center', gap: 32 }}>
+            <a href="#collection" style={{ fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
               COLLECTION
             </a>
-            <a href="#atelier" style={{ fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+            <a href="#atelier" style={{ fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
               ATELIER
             </a>
-            <a href="#lookbook" style={{ fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+            <a href="#lookbook" style={{ fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
               LOOKBOOK
             </a>
             <button
               onClick={onOpenTracking}
-              style={{ fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}
+              style={{ fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}
             >
               TRACK SHIPMENT
             </button>
           </nav>
 
-          {/* Right Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {/* Search Input Toggle */}
-            {showSearch ? (
-              <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-elevated)', borderRadius: 20, padding: '4px 12px', border: '1px solid var(--border-medium)' }}>
-                <Search size={14} color="var(--text-muted)" />
-                <input
-                  type="text"
-                  placeholder="Search pieces..."
-                  value={searchQuery}
-                  onChange={(e) => onSearchChange(e.target.value)}
-                  autoFocus
-                  style={{ background: 'none', border: 'none', padding: '6px 8px', fontSize: 12, width: 140 }}
-                />
-                <button onClick={() => setShowSearch(false)} style={{ color: 'var(--text-muted)' }}>
-                  <X size={14} />
-                </button>
-              </div>
-            ) : (
-              <button onClick={() => setShowSearch(true)} className="btn-icon" title="Search catalog">
-                <Search size={17} />
-              </button>
-            )}
+          {/* Right Action Icons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
 
-            {/* Wishlist */}
+            {/* Search Trigger */}
+            <button
+              onClick={() => setShowSearch(!showSearch)}
+              className="btn-icon"
+              title="Search catalog"
+              style={{ padding: '8px', background: showSearch ? 'var(--bg-elevated)' : 'transparent' }}
+            >
+              <Search size={17} />
+            </button>
+
+            {/* Wishlist Icon */}
             <button
               onClick={onOpenWishlist}
               className="btn-icon"
-              style={{ position: 'relative' }}
+              style={{ position: 'relative', padding: '8px' }}
               title="Wishlist"
             >
               <Heart size={17} />
               {wishlistCount > 0 && (
                 <span style={{
                   position: 'absolute',
-                  top: -4,
-                  right: -4,
+                  top: 2,
+                  right: 2,
                   background: 'var(--text-primary)',
                   color: 'var(--bg-deep)',
-                  width: 18,
-                  height: 18,
+                  width: 15,
+                  height: 15,
                   borderRadius: '50%',
-                  fontSize: 10,
+                  fontSize: 9,
                   fontWeight: 700,
                   display: 'flex',
                   alignItems: 'center',
@@ -145,25 +147,25 @@ export default function Header({
               )}
             </button>
 
-            {/* Cart Drawer Trigger */}
+            {/* Shopping Bag Icon */}
             <button
               onClick={onOpenCart}
               className="btn-icon"
-              style={{ position: 'relative' }}
+              style={{ position: 'relative', padding: '8px' }}
               title="Shopping Bag"
             >
               <ShoppingBag size={17} />
               {cartTotalCount > 0 && (
                 <span style={{
                   position: 'absolute',
-                  top: -4,
-                  right: -4,
+                  top: 2,
+                  right: 2,
                   background: 'var(--text-primary)',
                   color: 'var(--bg-deep)',
-                  width: 18,
-                  height: 18,
+                  width: 15,
+                  height: 15,
                   borderRadius: '50%',
-                  fontSize: 10,
+                  fontSize: 9,
                   fontWeight: 700,
                   display: 'flex',
                   alignItems: 'center',
@@ -177,51 +179,90 @@ export default function Header({
 
           </div>
         </div>
+
+        {/* Mobile / Expandable Search Bar Dropdown */}
+        {showSearch && (
+          <div style={{
+            width: '100%',
+            padding: '10px 16px',
+            borderTop: '1px solid var(--border-medium)',
+            background: 'var(--bg-elevated)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10
+          }}>
+            <Search size={16} color="var(--text-muted)" />
+            <input
+              type="text"
+              placeholder="Search pieces..."
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              autoFocus
+              style={{
+                flex: 1,
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-primary)',
+                fontSize: '13px',
+                outline: 'none'
+              }}
+            />
+            <button
+              onClick={() => {
+                setShowSearch(false);
+                onSearchChange('');
+              }}
+              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+            >
+              <X size={16} />
+            </button>
+          </div>
+        )}
       </header>
 
-      {/* Mobile Drawer Menu */}
+      {/* Fullscreen Mobile Overlay Menu */}
       {mobileMenuOpen && (
         <div
           style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 49,
-            background: 'rgba(5, 5, 6, 0.98)',
-            backdropFilter: 'blur(20px)',
+            zIndex: 99,
+            background: 'rgba(5, 5, 6, 0.96)',
+            backdropFilter: 'blur(25px)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            gap: 28,
+            gap: 32,
             padding: 32
           }}
         >
           <button
             onClick={() => setMobileMenuOpen(false)}
             className="btn-icon"
-            style={{ position: 'absolute', top: 24, right: 24 }}
+            style={{ position: 'absolute', top: 20, right: 20 }}
           >
-            <X size={24} />
+            <X size={26} />
           </button>
 
           <a
             href="#collection"
             onClick={() => setMobileMenuOpen(false)}
-            style={{ fontFamily: 'var(--font-display)', fontSize: 24, letterSpacing: '0.2em' }}
+            style={{ fontFamily: 'var(--font-display)', fontSize: 22, letterSpacing: '0.2em', color: 'var(--text-primary)', textDecoration: 'none' }}
           >
             COLLECTION
           </a>
           <a
             href="#atelier"
             onClick={() => setMobileMenuOpen(false)}
-            style={{ fontFamily: 'var(--font-display)', fontSize: 24, letterSpacing: '0.2em' }}
+            style={{ fontFamily: 'var(--font-display)', fontSize: 22, letterSpacing: '0.2em', color: 'var(--text-primary)', textDecoration: 'none' }}
           >
             ATELIER CRAFT
           </a>
           <a
             href="#lookbook"
             onClick={() => setMobileMenuOpen(false)}
-            style={{ fontFamily: 'var(--font-display)', fontSize: 24, letterSpacing: '0.2em' }}
+            style={{ fontFamily: 'var(--font-display)', fontSize: 22, letterSpacing: '0.2em', color: 'var(--text-primary)', textDecoration: 'none' }}
           >
             RUNWAY LOOKBOOK
           </a>
@@ -230,23 +271,34 @@ export default function Header({
               setMobileMenuOpen(false);
               onOpenTracking();
             }}
-            style={{ fontFamily: 'var(--font-display)', fontSize: 20, letterSpacing: '0.2em', color: 'var(--text-secondary)' }}
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 18,
+              letterSpacing: '0.2em',
+              color: 'var(--text-secondary)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer'
+            }}
           >
             TRACK SHIPMENT
           </button>
-
         </div>
       )}
 
-      <style type='jsx'>{`
+      <style jsx>{`
+        .desktop-nav {
+          display: none;
+        }
         @media (min-width: 900px) {
           .desktop-nav {
             display: flex !important;
           }
-        }
-        @media (max-width: 600px) {
-          .admin-btn-text {
-            display: none;
+          .brand-title {
+            font-size: 19px !important;
+          }
+          .brand-subtitle {
+            font-size: 9px !important;
           }
         }
       `}</style>
