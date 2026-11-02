@@ -2,13 +2,12 @@ import { Pool } from 'pg';
 import { Product, Order, EmailNotification, AdminSettings, AdminStats, OrderStatus } from '@/types';
 import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_SETTINGS } from './seed-data';
 
-// Initialize PostgreSQL pool using the Supabase DATABASE_URL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
+  connectionTimeoutMillis: 5000 // Prevents hanging on invalid hostnames
 });
 
-// Helper query executor with connection handling
 async function queryDb(queryText: string, params: any[] = []) {
   if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL environment variable is missing.');
@@ -21,7 +20,6 @@ async function queryDb(queryText: string, params: any[] = []) {
   }
 }
 
-// Ensure database tables and initial seed data exist in PostgreSQL
 async function ensureTablesExist() {
   if (!process.env.DATABASE_URL) return;
   try {
@@ -32,7 +30,6 @@ async function ensureTablesExist() {
       );
     `);
 
-    // Check if store state exists; if not, seed with products, orders, emails, and admin settings
     const res = await queryDb('SELECT * FROM store_store WHERE id = 1');
     if (res.rows.length === 0) {
       const initialData = {
@@ -64,14 +61,12 @@ async function ensureTablesExist() {
       };
       await queryDb('INSERT INTO store_store (id, data) VALUES (1, $1)', [JSON.stringify(initialData)]);
     }
-  } catch (err) {
-    console.error('Error ensuring database tables:', err);
+  } catch (err: any) {
+    console.warn('Supabase initialization fallback active during build:', err.message);
   }
 }
 
-// Fetch complete store state from PostgreSQL JSONB store
 async function getDbData() {
-  await ensureTablesExist();
   if (!process.env.DATABASE_URL) {
     return {
       products: INITIAL_PRODUCTS,
@@ -82,17 +77,15 @@ async function getDbData() {
   }
 
   try {
+    await ensureTablesExist();
     const res = await queryDb('SELECT data FROM store_store WHERE id = 1');
     if (res.rows.length > 0) {
       const data = res.rows[0].data;
-      // Ensure settings exists even if missing in old record
-      if (!data.settings) {
-        data.settings = INITIAL_SETTINGS;
-      }
+      if (!data.settings) data.settings = INITIAL_SETTINGS;
       return data;
     }
-  } catch (err) {
-    console.error('Error reading DB data:', err);
+  } catch (err: any) {
+    console.warn('Falling back to seed data:', err.message);
   }
 
   return {
@@ -103,21 +96,19 @@ async function getDbData() {
   };
 }
 
-// Save complete store state to PostgreSQL JSONB store
 async function saveDbData(data: any) {
-  await ensureTablesExist();
   if (!process.env.DATABASE_URL) return;
   try {
+    await ensureTablesExist();
     await queryDb(
       'INSERT INTO store_store (id, data) VALUES (1, $1) ON CONFLICT (id) DO UPDATE SET data = $1',
       [JSON.stringify(data)]
     );
-  } catch (err) {
-    console.error('Error saving DB data:', err);
+  } catch (err: any) {
+    console.error('Error saving DB data:', err.message);
   }
 }
 
-// Product operations
 export async function getProducts(category?: string, search?: string): Promise<Product[]> {
   const db = await getDbData();
   let items: Product[] = db.products || [];
@@ -199,7 +190,6 @@ export async function deleteProduct(id: string): Promise<boolean> {
   return false;
 }
 
-// Order operations
 export async function getOrders(status?: string, search?: string): Promise<Order[]> {
   const db = await getDbData();
   let orders: Order[] = db.orders || [];
@@ -279,7 +269,6 @@ export async function updateOrderStatus(
   return order;
 }
 
-// Email operations
 export async function getEmailNotifications(): Promise<EmailNotification[]> {
   const db = await getDbData();
   return (db.emails || []).sort(
@@ -303,7 +292,6 @@ export async function recordEmailNotification(
   return record;
 }
 
-// Admin Settings operations
 export async function getAdminSettings(): Promise<AdminSettings> {
   const db = await getDbData();
   return db.settings || INITIAL_SETTINGS;
@@ -316,7 +304,6 @@ export async function updateAdminSettings(settings: Partial<AdminSettings>): Pro
   return db.settings;
 }
 
-// Stats for dashboard
 export async function getAdminStats(): Promise<AdminStats> {
   const db = await getDbData();
   const orders = db.orders || [];
