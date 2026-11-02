@@ -480,10 +480,10 @@ export default function AdminPortal() {
                 <DollarSign size={16} color="#ffffff" />
               </div>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 26, fontWeight: 700, color: '#ffffff', margin: '8px 0 4px 0' }}>
-                {stats.totalRevenue.toLocaleString()} EGP
+                {Number(stats.totalRevenue || 0).toLocaleString()} EGP
               </div>
               <div style={{ fontSize: 11, color: '#6ee7b7', fontFamily: 'var(--font-mono)' }}>
-                Avg Acquisition Value: {stats.averageOrderValue.toLocaleString()} EGP
+                Avg Acquisition Value: {Number(stats.averageOrderValue || 0).toLocaleString()} EGP
               </div>
             </div>
 
@@ -708,7 +708,7 @@ export default function AdminPortal() {
                           </div>
                         </td>
                         <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#ffffff' }}>
-                          {order.total.toLocaleString()} EGP
+                          {Number(order.total || 0).toLocaleString()} EGP
                         </td>
                         <td>
                           <span className={`status-pill ${order.status}`}>
@@ -913,7 +913,7 @@ export default function AdminPortal() {
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: 12, borderTop: '1px solid var(--border-subtle)' }}>
                       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 15, fontWeight: 700 }}>
-                        {prod.price.toLocaleString()} EGP
+                        {Number(prod.price || 0).toLocaleString()} EGP
                       </span>
                       <button
                         onClick={() => handleDeleteProduct(prod.id)}
@@ -1051,7 +1051,7 @@ export default function AdminPortal() {
                         </div>
                       </div>
                       <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700 }}>
-                        {(it.price * it.quantity).toLocaleString()} EGP
+                        {Number(it.price * it.quantity || 0).toLocaleString()} EGP
                       </div>
                     </div>
                   ))}
@@ -1059,7 +1059,7 @@ export default function AdminPortal() {
 
                 <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 700 }}>
                   <span>TOTAL PAID</span>
-                  <span style={{ fontFamily: 'var(--font-mono)' }}>{selectedOrder.total.toLocaleString()} EGP</span>
+                  <span style={{ fontFamily: 'var(--font-mono)' }}>{Number(selectedOrder.total || 0).toLocaleString()} EGP</span>
                 </div>
               </div>
 

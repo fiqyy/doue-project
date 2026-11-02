@@ -50,7 +50,7 @@ export default function CartDrawer({
       setDiscountPercent(20);
       setAppliedPromo(code);
     } else {
-      setPromoError('Invalid VIP key. Try DOUEVIP10 or ARCHIVE20');
+      setPromoError('Invalid VIP key');
     }
   };
 
@@ -76,7 +76,7 @@ export default function CartDrawer({
           </button>
         </div>
 
-        {/* Free Shipping Progress Indicator */}
+        {/* Free Shipping Progress Indicator
         <div style={{ padding: '16px 24px', background: 'var(--bg-card)', borderBottom: '1px solid var(--border-subtle)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 6 }}>
             <span>
@@ -96,7 +96,7 @@ export default function CartDrawer({
               }}
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Cart Items List */}
         <div className="drawer-body">
@@ -190,7 +190,7 @@ export default function CartDrawer({
                   <div style={{ display: 'flex', gap: 8 }}>
                     <input
                       type="text"
-                      placeholder="VIP Code (e.g. DOUEVIP10)"
+                      placeholder="VIP Code"
                       value={promoCode}
                       onChange={(e) => setPromoCode(e.target.value)}
                       style={{ flexGrow: 1, padding: '8px 12px', fontSize: 12 }}
