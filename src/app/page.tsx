@@ -297,7 +297,7 @@ export default function HomePage() {
               <ArrowRight size={14} />
             </a>
 
-            <button
+            {/* <button
               onClick={() => {
                 if (products[0]) handleOpenProduct(products[0], true);
               }}
@@ -305,7 +305,7 @@ export default function HomePage() {
             >
               <Rotate3D size={15} />
               <span>3D ATELIER VIEWER</span>
-            </button>
+            </button> */}
           </div>
 
           {/* Floating Luxury Specifications */}
@@ -454,7 +454,7 @@ export default function HomePage() {
                   product={product}
                   onSelect={(p) => handleOpenProduct(p, false)}
                   onAddToCart={(p, s, c) => handleAddToCart(p, s, c, 1)}
-                  onOpen3D={(p) => handleOpenProduct(p, true)}
+                  // onOpen3D={(p) => handleOpenProduct(p, true)}
                   isWishlisted={wishlist.includes(product.id)}
                   onToggleWishlist={handleToggleWishlist}
                 />

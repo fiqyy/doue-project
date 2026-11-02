@@ -90,9 +90,9 @@ export default function Header({
             <a href="#collection" style={{ fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
               COLLECTION
             </a>
-            <a href="#atelier" style={{ fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+            {/* <a href="#atelier" style={{ fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
               ATELIER
-            </a>
+            </a> */}
             <a href="#lookbook" style={{ fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
               LOOKBOOK
             </a>

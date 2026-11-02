@@ -2,61 +2,30 @@
 
 import React, { useState, useRef } from 'react';
 import Image from 'next/image';
-import { Heart, Rotate3D, Plus, Check } from 'lucide-react';
+import { Heart, Plus, Check } from 'lucide-react';
 import { Product } from '@/types';
 
-interface ProductCard3DProps {
+interface ProductCardProps {
   product: Product;
   onSelect: (product: Product) => void;
   onAddToCart: (product: Product, size: string, color: string) => void;
-  onOpen3D: (product: Product) => void;
   isWishlisted?: boolean;
   onToggleWishlist?: (product: Product) => void;
 }
 
-export default function ProductCard3D({
+export default function ProductCard({
   product,
   onSelect,
   onAddToCart,
-  onOpen3D,
   isWishlisted = false,
   onToggleWishlist
-}: ProductCard3DProps) {
+}: ProductCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
-  const [glareOpacity, setGlareOpacity] = useState(0);
-  const [glarePos, setGlarePos] = useState({ x: 50, y: 50 });
   const [hoverSecondImage, setHoverSecondImage] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>(product.sizes[0] || 'M');
   const [addedNotice, setAddedNotice] = useState(false);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotX = -((y - centerY) / centerY) * 10; // Max 10 deg tilt
-    const rotY = ((x - centerX) / centerX) * 10;
-
-    setRotateX(rotX);
-    setRotateY(rotY);
-
-    setGlarePos({
-      x: (x / rect.width) * 100,
-      y: (y / rect.height) * 100
-    });
-    setGlareOpacity(0.18);
-  };
-
   const handleMouseLeave = () => {
-    setRotateX(0);
-    setRotateY(0);
-    setGlareOpacity(0);
     setHoverSecondImage(false);
   };
 
@@ -74,27 +43,12 @@ export default function ProductCard3D({
       ref={cardRef}
       className="product-card"
       style={{
-        transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(0)`,
         cursor: 'pointer'
       }}
-      onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onMouseEnter={() => setHoverSecondImage(true)}
       onClick={() => onSelect(product)}
     >
-      {/* 3D Light Glare Effect Overlay */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-          zIndex: 8,
-          borderRadius: 'inherit',
-          background: `radial-gradient(circle at ${glarePos.x}% ${glarePos.y}%, rgba(255,255,255,${glareOpacity}) 0%, transparent 65%)`,
-          transition: 'opacity 0.2s ease'
-        }}
-      />
-
       {/* Product Image Section */}
       <div className="product-image-container">
         {product.badge && (
@@ -136,36 +90,6 @@ export default function ProductCard3D({
           priority={false}
           style={{ objectFit: 'cover' }}
         />
-
-        {/* 3D Inspect Trigger Pill */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpen3D(product);
-          }}
-          style={{
-            position: 'absolute',
-            bottom: 14,
-            right: 14,
-            zIndex: 7,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            padding: '6px 12px',
-            background: 'rgba(12, 12, 15, 0.85)',
-            backdropFilter: 'blur(8px)',
-            border: '1px solid var(--border-medium)',
-            borderRadius: 20,
-            fontSize: 10,
-            fontFamily: 'var(--font-mono)',
-            letterSpacing: '0.1em',
-            color: 'var(--text-primary)'
-          }}
-          title="Inspect in 3D"
-        >
-          <Rotate3D size={13} />
-          <span>3D VIEW</span>
-        </button>
 
         {/* Quick Size Selection & Add to Cart on Hover */}
         <div className="product-quick-actions" onClick={(e) => e.stopPropagation()}>
