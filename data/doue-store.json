@@ -1,0 +1,56 @@
+{
+  "products": [
+    {
+      "id": "doue-001",
+      "name": "Wide-Leg Pleated Tailored Trousers",
+      "subtitle": "Crease-Resistant Tropical Wool / Deep Black",
+      "price": 2100,
+      "category": "trousers",
+      "description": "Dramatic high-waisted trousers featuring deep double inverted pleats and a generous fluid wide leg that pools softly over leather footwear. Equipped with concealed side tab adjusters and a pristine curtain waistband.",
+      "details": [
+        "100% High-Twist Crease-Resistant Wool",
+        "Deep double forward pleats",
+        "Extended tab waistband with horn closure",
+        "Sartorial split waistband back with V-notch",
+        "Tailored hem finish"
+      ],
+      "materials": "100% Virgin Wool; Pocketing: 100% Egyptian Cotton Herringbone",
+      "care": "Dry clean only. Hang on clamp hanger.",
+      "images": [
+        "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1200&q=85",
+        "https://images.unsplash.com/photo-1479064555552-3ef4979f8908?auto=format&fit=crop&w=1200&q=85"
+      ],
+      "colors": [
+        {
+          "name": "Deep Black",
+          "hex": "#0c0c0e"
+        },
+        {
+          "name": "Slate Grey",
+          "hex": "#313238"
+        }
+      ],
+      "sizes": [
+        "46 / S",
+        "48 / M",
+        "50 / L",
+        "52 / XL"
+      ],
+      "inStock": true,
+      "stockCount": 18,
+      "featured": false,
+      "badge": "TAILORED ESSENTIAL",
+      "modelDetails": "Model is 185cm wearing size 48 / M",
+      "threeDType": "trousers"
+    }
+  ],
+  "orders": [],
+  "emails": [],
+  "settings": {
+    "adminEmail": "[EMAIL_ADDRESS]",
+    "storeName": "DOUE PROJECT",
+    "currency": "EGP",
+    "smtpConfigured": false,
+    "senderName": "DOUE PROJECT"
+  }
+}
