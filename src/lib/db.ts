@@ -97,15 +97,20 @@ async function getDbData() {
 }
 
 async function saveDbData(data: any) {
-  if (!process.env.DATABASE_URL) return;
+  if (!process.env.DATABASE_URL) {
+    console.error('SAVE ERROR: DATABASE_URL is missing!');
+    return;
+  }
   try {
     await ensureTablesExist();
     await queryDb(
       'INSERT INTO store_store (id, data) VALUES (1, $1) ON CONFLICT (id) DO UPDATE SET data = $1',
       [JSON.stringify(data)]
     );
+    console.log('Successfully saved DB data to Supabase.');
   } catch (err: any) {
-    console.error('Error saving DB data:', err.message);
+    console.error('CRITICAL DB SAVE ERROR:', err.message);
+    throw err; // Re-throw so we see it in the API response or logs
   }
 }
 
