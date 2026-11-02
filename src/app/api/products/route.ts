@@ -7,7 +7,8 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category') || undefined;
     const search = searchParams.get('search') || undefined;
 
-    const products = getProducts(category, search);
+    // Added await here because getProducts is now async
+    const products = await getProducts(category, search);
     return NextResponse.json({ success: true, products, count: products.length });
   } catch (err: any) {
     console.error('Error in GET /api/products:', err);
@@ -26,7 +27,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const created = saveProduct(body);
+    // Added await here because saveProduct is now async
+    const created = await saveProduct(body);
     return NextResponse.json({ success: true, product: created }, { status: 201 });
   } catch (err: any) {
     console.error('Error in POST /api/products:', err);

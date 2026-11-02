@@ -4,7 +4,7 @@ import { dispatchOrderNotifications, generateOrderEmailHtml } from '@/lib/email'
 
 export async function GET() {
   try {
-    const emails = getEmailNotifications();
+    const emails = await getEmailNotifications();
     return NextResponse.json({ success: true, emails, count: emails.length });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
@@ -20,13 +20,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Order ID required' }, { status: 400 });
     }
 
-    const order = getOrderById(orderId);
+    const order = await getOrderById(orderId);
     if (!order) {
       return NextResponse.json({ success: false, error: 'Order not found' }, { status: 404 });
     }
 
     if (action === 'preview') {
-      const html = generateOrderEmailHtml(order, recipientType || 'admin');
+      const html = await generateOrderEmailHtml(order, recipientType || 'admin');
       return NextResponse.json({ success: true, html });
     }
 
