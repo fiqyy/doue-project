@@ -465,7 +465,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. Craftsmanship & Atelier Philosophy Section */}
+      {/* 5. Craftsmanship & Atelier Philosophy Section
       <section id="atelier" style={{ padding: '100px 0', background: '#0a0a0d', borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 60, alignItems: 'center' }}>
@@ -524,9 +524,9 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            {/* Editorial visual collage */}
+      {/* Editorial visual collage
             <div style={{ position: 'relative', height: 520, borderRadius: 4, overflow: 'hidden', border: '1px solid var(--border-medium)' }}>
               <Image
                 src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1200&q=85"
@@ -547,7 +547,7 @@ export default function HomePage() {
 
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* 6. Runway Lookbook Showcase */}
       <section id="lookbook" style={{ padding: '100px 0' }}>
