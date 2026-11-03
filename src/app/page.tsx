@@ -549,7 +549,7 @@ export default function HomePage() {
         </div>
       </section> */}
 
-      {/* 6. Runway Lookbook Showcase */}
+      {/* 6. Runway Lookbook Showcase
       <section id="lookbook" style={{ padding: '100px 0' }}>
         <div className="container">
           <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 60px auto' }}>
@@ -614,7 +614,7 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* 7. Private Salon Allocation Subscription */}
       <section style={{ padding: '80px 0', background: 'var(--bg-card)', borderTop: '1px solid var(--border-subtle)' }}>
@@ -679,11 +679,9 @@ export default function HomePage() {
                 COLLECTION
               </h4>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
-                <li><a href="#collection" onClick={() => setSelectedCategory('outerwear')}>Cashmere Outerwear</a></li>
-                <li><a href="#collection" onClick={() => setSelectedCategory('tailoring')}>Floating Canvas Tailoring</a></li>
-                <li><a href="#collection" onClick={() => setSelectedCategory('knitwear')}>Gauge Mongolian Knitwear</a></li>
-                <li><a href="#collection" onClick={() => setSelectedCategory('footwear')}>Platform Chelsea Boots</a></li>
-                <li><a href="#collection" onClick={() => setSelectedCategory('leather')}>Monolith Bull-Hide Leather</a></li>
+                <li><a href="#collection" onClick={() => setSelectedCategory('outerwear')}>Outerwear</a></li>
+                <li><a href="#collection" onClick={() => setSelectedCategory('knitwear')}>Knitwear</a></li>
+                <li><a href="#collection" onClick={() => setSelectedCategory('leather')}>Leather</a></li>
               </ul>
             </div>
 
@@ -698,9 +696,6 @@ export default function HomePage() {
                     Track Insured Shipment
                   </button>
                 </li>
-                <li><span>Bespoke Measurement Guide</span></li>
-                <li><span>Complimentary Global Courier</span></li>
-                <li><span>Archival Garment Storage Care</span></li>
               </ul>
             </div>
 
