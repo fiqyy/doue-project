@@ -30,9 +30,7 @@ export default function CartDrawer({
   if (!isOpen) return null;
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const freeShippingThreshold = 2000;
-  const progressToFreeShipping = Math.min(100, (subtotal / freeShippingThreshold) * 100);
-  const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
+  const freeShippingThreshold = 10000;
 
   const discountAmount = (subtotal * discountPercent) / 100;
   const shippingFee = subtotal >= freeShippingThreshold || subtotal === 0 ? 0 : 45;
