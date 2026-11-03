@@ -230,13 +230,6 @@ export default function Header({
           >
             COLLECTION
           </a>
-          <a
-            href="#lookbook"
-            onClick={() => setMobileMenuOpen(false)}
-            style={{ fontFamily: 'var(--font-display)', fontSize: 22, letterSpacing: '0.2em', color: 'var(--text-primary)', textDecoration: 'none' }}
-          >
-            RUNWAY LOOKBOOK
-          </a>
           <button
             onClick={() => {
               setMobileMenuOpen(false);
