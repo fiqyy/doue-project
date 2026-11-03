@@ -265,6 +265,7 @@ export default function HomePage() {
           muted
           loop
           playsInline
+          preload="auto"
           className="hero-bg-video"
           src="https://res.cloudinary.com/le4531f6/video/upload/v1793669023/23324-334689157_medium.mp4"
           style={{
