@@ -222,7 +222,7 @@ export default function CartDrawer({
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
                 <span>Insured Courier Delivery</span>
-                <span style={{ fontFamily: 'var(--font-mono)' }}>${shippingFee}</span>
+                <span style={{ fontFamily: 'var(--font-mono)' }}>{shippingFee} EGP</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
                 <span>Tax & Duties Fee</span>
