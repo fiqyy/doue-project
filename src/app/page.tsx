@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -55,7 +55,7 @@ export default function HomePage() {
   const [giftPackaging, setGiftPackaging] = useState(true);
 
   // Video & Ambient
-  const [videoPlaying, setVideoPlaying] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
 
@@ -66,6 +66,13 @@ export default function HomePage() {
   const [adminAuthLoading, setAdminAuthLoading] = useState(false);
 
   useEffect(() => {
+    // Force play video programmatically on iOS/Safari mount
+    if (videoRef.current) {
+      videoRef.current.play().catch((err) => {
+        console.log("Autoplay prevented by browser policy:", err);
+      });
+    }
+
     let keyBuffer = '';
     const handleKeyDown = (e: KeyboardEvent) => {
       // Hotkey: Ctrl+Shift+A or Alt+A opens Admin Auth Passkey prompt
@@ -261,6 +268,7 @@ export default function HomePage() {
       <section className="hero-wrapper" style={{ position: 'relative', overflow: 'hidden' }}>
         {/* Ambient video background loop */}
         <video
+          ref={videoRef}
           autoPlay
           muted
           loop
