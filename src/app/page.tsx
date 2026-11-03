@@ -312,9 +312,9 @@ export default function HomePage() {
             DOUE PROJECT
           </h1>
 
-          <p className="hero-desc">
+          {/* <p className="hero-desc">
             Aesthetic elegance forged in deep obsidian and slate grey. Crafted in Biella from double-faced cashmere, deconstructed floating canvases, and hand-finished titanium hardware.
-          </p>
+          </p> */}
 
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
             <a href="#collection" className="btn-luxury">
