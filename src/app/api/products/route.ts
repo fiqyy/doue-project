@@ -7,7 +7,6 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category') || undefined;
     const search = searchParams.get('search') || undefined;
 
-    // Added await here because getProducts is now async
     const products = await getProducts(category, search);
     return NextResponse.json({ success: true, products, count: products.length });
   } catch (err: any) {
@@ -27,7 +26,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Added await here because saveProduct is now async
     const created = await saveProduct(body);
     return NextResponse.json({ success: true, product: created }, { status: 201 });
   } catch (err: any) {
