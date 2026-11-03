@@ -551,9 +551,6 @@ export default function AdminPortal() {
                 DOUE &bull; ADMIN PORTAL
               </h1>
             </div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', color: '#6ee7b7', display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
-            </div>
           </div>
         </div>
 

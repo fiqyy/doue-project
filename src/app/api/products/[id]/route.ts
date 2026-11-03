@@ -3,10 +3,11 @@ import { getProductById, saveProduct, deleteProduct } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const product = getProductById(params.id);
+    const { id } = await params; // Await params in Next.js 15+
+    const product = getProductById(id);
     if (!product) {
       return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
     }
@@ -18,11 +19,12 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params; // Await params in Next.js 15+
     const body = await request.json();
-    const updated = saveProduct({ ...body, id: params.id });
+    const updated = saveProduct({ ...body, id });
     return NextResponse.json({ success: true, product: updated });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
@@ -31,10 +33,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const deleted = deleteProduct(params.id);
+    const { id } = await params; // Await params in Next.js 15+
+    const deleted = deleteProduct(id);
     if (!deleted) {
       return NextResponse.json({ success: false, error: 'Product not found or already deleted' }, { status: 404 });
     }
