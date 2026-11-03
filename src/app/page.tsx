@@ -266,7 +266,7 @@ export default function HomePage() {
           loop
           playsInline
           className="hero-bg-video"
-          src="https://assets.mixkit.co/videos/preview/mixkit-fashion-model-in-a-black-outfit-walking-in-slow-motion-41235-large.mp4"
+          src="https://res.cloudinary.com/le4531f6/video/upload/v1793669023/23324-334689157_medium.mp4"
           style={{
             position: 'absolute',
             top: '50%',
