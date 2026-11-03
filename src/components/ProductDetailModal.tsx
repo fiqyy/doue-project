@@ -71,8 +71,9 @@ export default function ProductDetailModal({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '16px',
-        overflowY: 'auto'
+        padding: '12px',
+        overflowY: 'auto',
+        boxSizing: 'border-box'
       }}
     >
       <div
@@ -80,45 +81,62 @@ export default function ProductDetailModal({
         onClick={(e) => e.stopPropagation()}
         style={{
           width: '100%',
-          maxWidth: 1040,
+          maxWidth: '960px',
           maxHeight: '90vh',
-          overflowY: 'auto', // Enables smooth internal vertical scrolling on mobile
+          overflowY: 'auto',
+          overflowX: 'hidden', // Prevents horizontal bleeding
           padding: 0,
           position: 'relative',
           background: 'var(--bg-deep, #09090b)',
           borderRadius: '4px',
-          border: '1px solid var(--border-medium)'
+          border: '1px solid var(--border-medium)',
+          boxSizing: 'border-box'
         }}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
           className="btn-icon"
-          style={{ position: 'sticky', top: 20, float: 'right', marginRight: 20, marginTop: 20, zIndex: 30, width: 38, height: 38, background: 'rgba(12,12,15,0.85)' }}
+          style={{
+            position: 'absolute',
+            top: 16,
+            right: 16,
+            zIndex: 40,
+            width: 38,
+            height: 38,
+            background: 'rgba(12,12,15,0.85)',
+            border: '1px solid var(--border-medium)',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer'
+          }}
         >
-          <X size={18} />
+          <X size={18} color="#fff" />
         </button>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
+        {/* Modal Main Grid - Stacks vertically on mobile, 2 columns on desktop */}
+        <div className="modal-grid-layout" style={{ display: 'grid', gridTemplateColumns: '1fr', width: '100%', boxSizing: 'border-box' }}>
 
           {/* Left Column: Image Gallery & Thumbnails */}
-          <div style={{ position: 'relative', background: '#09090b', borderRight: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ position: 'relative', background: '#09090b', width: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
 
             {/* Main Active High-Res Image Display */}
-            <div style={{ position: 'relative', width: '100%', minHeight: '420px', flexGrow: 1, background: 'var(--bg-elevated)' }}>
+            <div style={{ position: 'relative', width: '100%', height: '380px', background: 'var(--bg-elevated)' }}>
               <Image
                 src={activeImage}
                 alt={product.name}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 priority
-                style={{ objectFit: 'cover' }}
+                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
               />
             </div>
 
             {/* Thumbnail Strip */}
             {product.images && product.images.length > 1 && (
-              <div style={{ display: 'flex', gap: 10, padding: 14, background: 'var(--bg-card)', borderTop: '1px solid var(--border-subtle)', overflowX: 'auto' }}>
+              <div style={{ display: 'flex', gap: 10, padding: 14, background: 'var(--bg-card)', borderTop: '1px solid var(--border-subtle)', overflowX: 'auto', width: '100%', boxSizing: 'border-box' }}>
                 {product.images.map((img, i) => (
                   <button
                     key={i}
@@ -145,13 +163,13 @@ export default function ProductDetailModal({
           </div>
 
           {/* Right Column: Couture Specs & Purchasing */}
-          <div style={{ padding: '24px 24px 32px 24px', display: 'flex', flexDirection: 'column', background: 'var(--bg-deep)' }}>
+          <div style={{ padding: '24px 20px 32px 20px', display: 'flex', flexDirection: 'column', background: 'var(--bg-deep)', width: '100%', boxSizing: 'border-box' }}>
 
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.25em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 8 }}>
               HAUTE ATELIER // {product.category}
             </div>
 
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, letterSpacing: '0.08em', marginBottom: 6, color: 'var(--text-primary)' }}>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 22, letterSpacing: '0.08em', marginBottom: 6, color: 'var(--text-primary)', wordBreak: 'break-word' }}>
               {product.name}
             </h1>
 
@@ -160,12 +178,12 @@ export default function ProductDetailModal({
             </div>
 
             {/* Price */}
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid var(--border-subtle)' }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 24, fontWeight: 700, color: 'var(--text-primary)' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: 12, marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid var(--border-subtle)' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--text-primary)' }}>
                 {product.price.toLocaleString()} EGP
               </span>
               {product.originalPrice && (
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, color: 'var(--text-dim)', textDecoration: 'line-through' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 15, color: 'var(--text-dim)', textDecoration: 'line-through' }}>
                   {product.originalPrice.toLocaleString()} EGP
                 </span>
               )}
@@ -175,13 +193,13 @@ export default function ProductDetailModal({
             </div>
 
             {/* Egyptian Market Trust Pill */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)', borderRadius: 2, marginBottom: 20, fontSize: 11, color: '#d4d4d8' }}>
-              <Check size={14} color="#6ee7b7" />
-              <span>Try & Inspect on Delivery (معاينة عند الاستلام) &bull; Cairo & Governorates Dispatch</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)', borderRadius: 2, marginBottom: 20, fontSize: 11, color: '#d4d4d8', boxSizing: 'border-box' }}>
+              <Check size={14} color="#6ee7b7" style={{ flexShrink: 0 }} />
+              <span>Try & Inspect on Delivery (معاينة عند الاستلام) &bull; Cairo Dispatch</span>
             </div>
 
             {/* Description */}
-            <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 24 }}>
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 24, wordBreak: 'break-word' }}>
               {product.description}
             </p>
 
@@ -256,7 +274,7 @@ export default function ProductDetailModal({
             </div>
 
             {/* Quantity Stepper & Add to Bag */}
-            <div style={{ display: 'flex', gap: 12, marginBottom: 28 }}>
+            <div style={{ display: 'flex', gap: 10, marginBottom: 28, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border-medium)', borderRadius: 2, background: 'var(--bg-card)' }}>
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -278,7 +296,7 @@ export default function ProductDetailModal({
               <button
                 onClick={handleAdd}
                 className="btn-luxury"
-                style={{ flexGrow: 1, padding: '14px 24px', fontSize: 12 }}
+                style={{ flexGrow: 1, minWidth: '180px', padding: '14px 16px', fontSize: 11, boxSizing: 'border-box' }}
               >
                 {addedNotice ? (
                   <>
@@ -288,7 +306,7 @@ export default function ProductDetailModal({
                 ) : (
                   <>
                     <Sparkles size={16} />
-                    <span>ADD TO ATELIER BAG &bull; {(product.price * quantity).toLocaleString()} EGP</span>
+                    <span>ADD TO BAG &bull; {(product.price * quantity).toLocaleString()} EGP</span>
                   </>
                 )}
               </button>
@@ -300,19 +318,27 @@ export default function ProductDetailModal({
                 <Feather size={14} />
                 <span>MATERIALS & ARTISANAL CRAFT</span>
               </div>
-              <p style={{ marginBottom: 12 }}>{product.materials}</p>
+              <p style={{ marginBottom: 12, wordBreak: 'break-word' }}>{product.materials}</p>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, color: '#fff', fontWeight: 600 }}>
                 <Shield size={14} />
                 <span>ATELIER PROVENANCE & CARE</span>
               </div>
-              <p>{product.care}</p>
+              <p style={{ wordBreak: 'break-word' }}>{product.care}</p>
             </div>
 
           </div>
 
         </div>
       </div>
+
+      <style jsx>{`
+        @media (min-width: 768px) {
+          .modal-grid-layout {
+            grid-template-columns: 1.1fr 1fr !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
