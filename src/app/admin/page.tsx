@@ -27,9 +27,16 @@ import {
   DollarSign,
   AlertCircle,
   X,
-  Lock
+  Lock,
+  Upload,
+  Palette
 } from 'lucide-react';
 import { Order, Product, AdminStats, EmailNotification, AdminSettings, OrderStatus } from '@/types';
+
+interface CustomColorOption {
+  name: string;
+  hex: string;
+}
 
 export default function AdminPortal() {
   const [activeTab, setActiveTab] = useState<'orders' | 'emails' | 'products' | 'settings'>('orders');
@@ -56,7 +63,7 @@ export default function AdminPortal() {
   const [previewEmailHtml, setPreviewEmailHtml] = useState<string | null>(null);
   const [previewEmailTitle, setPreviewEmailTitle] = useState('');
 
-  // Add Product Modal
+  // Add Product Modal States
   const [showAddProductModal, setShowAddProductModal] = useState(false);
   const [newProductName, setNewProductName] = useState('');
   const [newProductSubtitle, setNewProductSubtitle] = useState('');
@@ -64,8 +71,16 @@ export default function AdminPortal() {
   const [newProductPrice, setNewProductPrice] = useState(1200);
   const [newProductDescription, setNewProductDescription] = useState('');
   const [newProductMaterials, setNewProductMaterials] = useState('');
-  const [newProductImages, setNewProductImages] = useState('https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1200&q=85');
   const [newProductStock, setNewProductStock] = useState(10);
+
+  // Device Image Uploads & Dynamic Colors
+  const [productImagesList, setProductImagesList] = useState<string[]>([]);
+  const [productColorsList, setProductColorsList] = useState<CustomColorOption[]>([
+    { name: 'Obsidian Black', hex: '#0a0a0a' },
+    { name: 'Rich Cognac Brown', hex: '#5c4033' }
+  ]);
+  const [newColorNameInput, setNewColorNameInput] = useState('');
+  const [newColorHexInput, setNewColorHexInput] = useState('#8b5cf6');
 
   // Settings form
   const [adminEmailInput, setAdminEmailInput] = useState('');
@@ -172,6 +187,24 @@ export default function AdminPortal() {
     setPasswordInput('');
   };
 
+  // Handle device image file selection
+  const handleDeviceImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const filesArray = Array.from(e.target.files);
+    const newImageUrls = filesArray.map((file) => URL.createObjectURL(file));
+    setProductImagesList((prev) => [...prev, ...newImageUrls]);
+  };
+
+  // Add custom color
+  const handleAddColorOption = () => {
+    if (!newColorNameInput.trim()) return;
+    setProductColorsList((prev) => [
+      ...prev,
+      { name: newColorNameInput.trim(), hex: newColorHexInput }
+    ]);
+    setNewColorNameInput('');
+  };
+
   // Update order status
   const handleUpdateOrderStatus = async () => {
     if (!selectedOrder) return;
@@ -189,7 +222,6 @@ export default function AdminPortal() {
       const data = await res.json();
       if (data.success) {
         setSelectedOrder(data.order);
-        // Refresh orders & stats
         fetchData();
       }
     } catch (err) {
@@ -209,7 +241,7 @@ export default function AdminPortal() {
       });
       const data = await res.json();
       if (data.success) {
-        alert('Notification email successfully resent!');
+        alert('Notification email successfully resent to all designated admin emails!');
         fetchData();
       }
     } catch (err) {
@@ -235,7 +267,7 @@ export default function AdminPortal() {
     }
   };
 
-  // Save Settings
+  // Save Settings (Supports multiple admin emails separated by commas)
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -243,24 +275,28 @@ export default function AdminPortal() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          adminEmail: adminEmailInput.trim(),
+          adminEmail: adminEmailInput.trim(), // e.g. "fiqyyyy@gmail.com, secondadmin@gmail.com"
           storeName: storeNameInput.trim()
         })
       });
       const data = await res.json();
       if (data.success) {
         setSettings(data.settings);
-        setSettingsSuccess('Notification settings successfully updated!');
-        setTimeout(() => setSettingsSuccess(''), 3000);
+        setSettingsSuccess('Notification settings successfully updated. All listed admin emails will now receive order alerts.');
+        setTimeout(() => setSettingsSuccess(''), 4000);
       }
     } catch (err) {
       alert('Error saving settings');
     }
   };
 
-  // Save New Product
+  // Save New Product with uploaded images and colors
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (productImagesList.length === 0) {
+      alert('Please upload at least one image for this luxury piece.');
+      return;
+    }
     try {
       const res = await fetch('/api/products', {
         method: 'POST',
@@ -272,9 +308,9 @@ export default function AdminPortal() {
           price: Number(newProductPrice),
           description: newProductDescription,
           materials: newProductMaterials,
-          images: [newProductImages.trim()],
+          images: productImagesList,
           sizes: ['46 / S', '48 / M', '50 / L', '52 / XL'],
-          colors: [{ name: 'Obsidian Black', hex: '#0a0a0a' }],
+          colors: productColorsList,
           stockCount: Number(newProductStock),
           inStock: Number(newProductStock) > 0,
           badge: 'NEW ATELIER RELEASE'
@@ -285,6 +321,11 @@ export default function AdminPortal() {
         setShowAddProductModal(false);
         setNewProductName('');
         setNewProductSubtitle('');
+        setProductImagesList([]);
+        setProductColorsList([
+          { name: 'Obsidian Black', hex: '#0a0a0a' },
+          { name: 'Rich Cognac Brown', hex: '#5c4033' }
+        ]);
         fetchData();
       }
     } catch (err) {
@@ -435,7 +476,7 @@ export default function AdminPortal() {
             </div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', color: '#6ee7b7', display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
-              <span>EMAIL NOTIFICATIONS SYSTEM ONLINE &bull; ORDER DISPATCH ACTIVE</span>
+              <span>MULTI-ADMIN NOTIFICATION SYSTEM ACTIVE &bull; ORDER DISPATCH READY</span>
             </div>
           </div>
         </div>
@@ -477,7 +518,6 @@ export default function AdminPortal() {
             <div className="admin-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', color: 'var(--text-muted)' }}>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em' }}>TOTAL ATELIER REVENUE</span>
-                <DollarSign size={16} color="#ffffff" />
               </div>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 26, fontWeight: 700, color: '#ffffff', margin: '8px 0 4px 0' }}>
                 {Number(stats.totalRevenue || 0).toLocaleString()} EGP
@@ -515,10 +555,10 @@ export default function AdminPortal() {
 
             <div className="admin-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', color: 'var(--text-muted)' }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em' }}>ADMIN NOTIFICATION EMAIL</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em' }}>ADMIN NOTIFICATION EMAILS</span>
                 <Mail size={16} color="#ffffff" />
               </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600, color: '#ffffff', margin: '12px 0 4px 0', wordBreak: 'break-all' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600, color: '#ffffff', margin: '12px 0 4px 0', wordBreak: 'break-all' }}>
                 {settings?.adminEmail || 'fiqyyyy@gmail.com'}
               </div>
               <div style={{ fontSize: 11, color: '#6ee7b7', fontFamily: 'var(--font-mono)' }}>
@@ -771,10 +811,10 @@ export default function AdminPortal() {
             <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-medium)', borderRadius: 4, padding: '20px', marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 14, letterSpacing: '0.1em' }}>
-                  REAL-TIME ORDER NOTIFICATION DISPATCHER
+                  MULTI-ADMIN NOTIFICATION DISPATCHER
                 </h3>
                 <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>
-                  Every acquisition automatically triggers responsive HTML emails to the store director (<span style={{ color: '#fff' }}>{settings?.adminEmail}</span>) and customer.
+                  Every acquisition automatically triggers responsive HTML emails to all designated administrators (<span style={{ color: '#fff' }}>{settings?.adminEmail}</span>) and the client.
                 </p>
               </div>
 
@@ -877,7 +917,7 @@ export default function AdminPortal() {
                   ATELIER CATALOG MANAGEMENT ({products.length} PIECES)
                 </h3>
                 <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                  Manage luxury garments, pricing, stock allocation, and 3D specifications
+                  Manage luxury garments, pricing, stock allocation, and device image uploads
                 </span>
               </div>
               <button
@@ -939,23 +979,24 @@ export default function AdminPortal() {
                 ADMIN EMAIL NOTIFICATION CONFIGURATION
               </h3>
               <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 24, lineHeight: 1.6 }}>
-                Configure the destination email where real-time luxury order alerts are dispatched as soon as a customer acquires pieces on the website.
+                Configure the destination emails where real-time luxury order alerts are dispatched as soon as a customer acquires pieces on the website. You can add multiple admin emails separated by commas (e.g. <span style={{ color: '#fff' }}>fiqyyyy@gmail.com, partner@douenoir.com</span>) to ensure all admins receive notifications.
               </p>
 
               <form onSubmit={handleSaveSettings}>
                 <div style={{ marginBottom: 20 }}>
                   <label style={{ display: 'block', fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginBottom: 6 }}>
-                    ADMIN RECIPIENT EMAIL ADDRESS *
+                    ADMIN RECIPIENT EMAIL ADDRESS(ES) *
                   </label>
                   <input
-                    type="email"
+                    type="text"
                     required
                     value={adminEmailInput}
                     onChange={(e) => setAdminEmailInput(e.target.value)}
+                    placeholder="fiqyyyy@gmail.com, admin2@gmail.com"
                     style={{ width: '100%', fontSize: 14 }}
                   />
                   <span style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 4, display: 'block' }}>
-                    All high-value order alerts will be delivered to this address.
+                    All listed admins will instantly receive high-value order notification alerts upon checkout.
                   </span>
                 </div>
 
@@ -1177,15 +1218,15 @@ export default function AdminPortal() {
         </div>
       )}
 
-      {/* MODAL 3: ADD PRODUCT MODAL */}
+      {/* MODAL 3: ADD PRODUCT MODAL WITH DEVICE UPLOADS & UNLIMITED COLORS */}
       {showAddProductModal && (
         <div className="modal-backdrop" onClick={() => setShowAddProductModal(false)}>
           <div
             className="modal-content"
             onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: 640, padding: 0 }}
+            style={{ maxWidth: 680, maxHeight: '90vh', overflowY: 'auto', padding: 0 }}
           >
-            <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0e0e12', position: 'sticky', top: 0, zIndex: 10 }}>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 16, letterSpacing: '0.12em' }}>
                 ADD LUXURY PIECE TO ATELIER CATALOG
               </h2>
@@ -1215,10 +1256,8 @@ export default function AdminPortal() {
                     style={{ width: '100%' }}
                   >
                     <option value="outerwear">Outerwear</option>
-                    <option value="tailoring">Tailoring</option>
                     <option value="knitwear">Knitwear</option>
                     <option value="trousers">Trousers</option>
-                    <option value="footwear">Footwear</option>
                     <option value="leather">Leather Goods</option>
                   </select>
                 </div>
@@ -1238,7 +1277,7 @@ export default function AdminPortal() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>PRICE (USD) *</label>
+                  <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>PRICE (EGP) *</label>
                   <input
                     type="number"
                     required
@@ -1249,7 +1288,7 @@ export default function AdminPortal() {
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>INITIAL STOCK ALLOCATION *</label>
+                  <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>INITIAL STOCK *</label>
                   <input
                     type="number"
                     required
@@ -1261,15 +1300,85 @@ export default function AdminPortal() {
                 </div>
               </div>
 
-              <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>EDITORIAL IMAGE URL *</label>
+              {/* DEVICE IMAGE UPLOADER SECTION */}
+              <div style={{ marginBottom: 20, padding: 16, background: 'rgba(255,255,255,0.02)', border: '1px dashed var(--border-medium)', borderRadius: 4 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: '#fff', marginBottom: 8, cursor: 'pointer' }}>
+                  <Upload size={14} />
+                  <span>UPLOAD PICTURES FROM DEVICE (MULTIPLE) *</span>
+                </label>
                 <input
-                  type="url"
-                  required
-                  value={newProductImages}
-                  onChange={(e) => setNewProductImages(e.target.value)}
-                  style={{ width: '100%', fontFamily: 'var(--font-mono)', fontSize: 12 }}
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleDeviceImageUpload}
+                  style={{ fontSize: 12, color: 'var(--text-secondary)' }}
                 />
+
+                {productImagesList.length > 0 && (
+                  <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
+                    {productImagesList.map((imgSrc, idx) => (
+                      <div key={idx} style={{ position: 'relative', width: 60, height: 75, borderRadius: 2, overflow: 'hidden', border: '1px solid #fff' }}>
+                        <Image src={imgSrc} alt={`Uploaded ${idx}`} fill style={{ objectFit: 'cover' }} />
+                        <button
+                          type="button"
+                          onClick={() => setProductImagesList(productImagesList.filter((_, i) => i !== idx))}
+                          style={{ position: 'absolute', top: 2, right: 2, background: 'rgba(0,0,0,0.8)', color: '#fff', border: 'none', borderRadius: '50%', width: 18, height: 18, fontSize: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* DYNAMIC UNLIMITED COLOR OPTIONS SECTION */}
+              <div style={{ marginBottom: 20, padding: 16, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-medium)', borderRadius: 4 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: '#fff', marginBottom: 8 }}>
+                  <Palette size={14} />
+                  <span>ADD AS MANY COLORS AS YOU WANT</span>
+                </label>
+
+                <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    placeholder="Color Name (e.g. Olive Green)"
+                    value={newColorNameInput}
+                    onChange={(e) => setNewColorNameInput(e.target.value)}
+                    style={{ flexGrow: 1, padding: '8px 12px', fontSize: 12 }}
+                  />
+                  <input
+                    type="color"
+                    value={newColorHexInput}
+                    onChange={(e) => setNewColorHexInput(e.target.value)}
+                    style={{ width: 40, height: 38, background: 'none', border: '1px solid var(--border-medium)', cursor: 'pointer', padding: 2 }}
+                    title="Select Color Hex"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddColorOption}
+                    className="btn-luxury-outline"
+                    style={{ padding: '9px 14px', fontSize: 11 }}
+                  >
+                    ADD COLOR
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {productColorsList.map((col, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 2, fontSize: 11, fontFamily: 'var(--font-mono)' }}>
+                      <span style={{ width: 12, height: 12, borderRadius: '50%', background: col.hex, border: '1px solid rgba(255,255,255,0.2)' }} />
+                      <span>{col.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => setProductColorsList(productColorsList.filter((_, i) => i !== idx))}
+                        style={{ background: 'none', border: 'none', color: '#fca5a5', cursor: 'pointer', marginLeft: 4, fontSize: 13 }}
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div style={{ marginBottom: 14 }}>
