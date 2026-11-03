@@ -73,7 +73,7 @@ export default function AdminPortal() {
   const [newProductMaterials, setNewProductMaterials] = useState('');
   const [newProductStock, setNewProductStock] = useState(10);
 
-  // Device Image Uploads & Dynamic Colors
+  // Device Image Uploads & Dynamic Colors for Add
   const [productImagesList, setProductImagesList] = useState<string[]>([]);
   const [productColorsList, setProductColorsList] = useState<CustomColorOption[]>([
     { name: 'Obsidian Black', hex: '#0a0a0a' },
@@ -81,6 +81,20 @@ export default function AdminPortal() {
   ]);
   const [newColorNameInput, setNewColorNameInput] = useState('');
   const [newColorHexInput, setNewColorHexInput] = useState('#8b5cf6');
+
+  // Edit Product Modal States
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [editProductName, setEditProductName] = useState('');
+  const [editProductSubtitle, setEditProductSubtitle] = useState('');
+  const [editProductCategory, setEditProductCategory] = useState<Product['category']>('outerwear');
+  const [editProductPrice, setEditProductPrice] = useState(1200);
+  const [editProductDescription, setEditProductDescription] = useState('');
+  const [editProductMaterials, setEditProductMaterials] = useState('');
+  const [editProductStock, setEditProductStock] = useState(10);
+  const [editProductImagesList, setEditProductImagesList] = useState<string[]>([]);
+  const [editProductColorsList, setEditProductColorsList] = useState<CustomColorOption[]>([]);
+  const [editColorNameInput, setEditColorNameInput] = useState('');
+  const [editColorHexInput, setEditColorHexInput] = useState('#8b5cf6');
 
   // Settings form
   const [adminEmailInput, setAdminEmailInput] = useState('');
@@ -187,7 +201,7 @@ export default function AdminPortal() {
     setPasswordInput('');
   };
 
-  // Handle device image file selection
+  // Handle device image file selection for Add Product
   const handleDeviceImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const filesArray = Array.from(e.target.files);
@@ -195,7 +209,6 @@ export default function AdminPortal() {
     setProductImagesList((prev) => [...prev, ...newImageUrls]);
   };
 
-  // Add custom color
   const handleAddColorOption = () => {
     if (!newColorNameInput.trim()) return;
     setProductColorsList((prev) => [
@@ -203,6 +216,76 @@ export default function AdminPortal() {
       { name: newColorNameInput.trim(), hex: newColorHexInput }
     ]);
     setNewColorNameInput('');
+  };
+
+  // Handle device image file selection for Edit Product
+  const handleEditDeviceImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const filesArray = Array.from(e.target.files);
+    const newImageUrls = filesArray.map((file) => URL.createObjectURL(file));
+    setEditProductImagesList((prev) => [...prev, ...newImageUrls]);
+  };
+
+  const handleAddEditColorOption = () => {
+    if (!editColorNameInput.trim()) return;
+    setEditProductColorsList((prev) => [
+      ...prev,
+      { name: editColorNameInput.trim(), hex: editColorHexInput }
+    ]);
+    setEditColorNameInput('');
+  };
+
+  // Open Edit Product Modal
+  const handleOpenEditProduct = (prod: Product) => {
+    setEditingProduct(prod);
+    setEditProductName(prod.name);
+    setEditProductSubtitle(prod.subtitle || '');
+    setEditProductCategory(prod.category);
+    setEditProductPrice(prod.price);
+    setEditProductDescription(prod.description || '');
+    setEditProductMaterials(prod.materials || '');
+    setEditProductStock(prod.stockCount || 10);
+    setEditProductImagesList(prod.images || []);
+    setEditProductColorsList(prod.colors || []);
+  };
+
+  // Save Updated Product
+  const handleUpdateProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+    if (editProductImagesList.length === 0) {
+      alert('Please keep or upload at least one image.');
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/products/${editingProduct.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editProductName,
+          subtitle: editProductSubtitle,
+          category: editProductCategory,
+          price: Number(editProductPrice),
+          description: editProductDescription,
+          materials: editProductMaterials,
+          images: editProductImagesList,
+          sizes: editingProduct.sizes || ['46 / S', '48 / M', '50 / L', '52 / XL'],
+          colors: editProductColorsList,
+          stockCount: Number(editProductStock),
+          inStock: Number(editProductStock) > 0,
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setEditingProduct(null);
+        fetchData();
+      } else {
+        alert(data.error || 'Failed to update product');
+      }
+    } catch (err) {
+      alert('Failed to update product');
+    }
   };
 
   // Update order status
@@ -231,7 +314,6 @@ export default function AdminPortal() {
     }
   };
 
-  // Resend notification
   const handleResendNotification = async (orderId: string) => {
     try {
       const res = await fetch('/api/admin/emails', {
@@ -249,7 +331,6 @@ export default function AdminPortal() {
     }
   };
 
-  // Preview Email
   const handlePreviewEmail = async (orderId: string, recipientType: 'admin' | 'customer' = 'admin') => {
     try {
       const res = await fetch('/api/admin/emails', {
@@ -267,7 +348,6 @@ export default function AdminPortal() {
     }
   };
 
-  // Save Settings (Supports multiple admin emails separated by commas)
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -275,7 +355,7 @@ export default function AdminPortal() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          adminEmail: adminEmailInput.trim(), // e.g. "fiqyyyy@gmail.com, secondadmin@gmail.com"
+          adminEmail: adminEmailInput.trim(),
           storeName: storeNameInput.trim()
         })
       });
@@ -290,7 +370,6 @@ export default function AdminPortal() {
     }
   };
 
-  // Save New Product with uploaded images and colors
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (productImagesList.length === 0) {
@@ -309,7 +388,7 @@ export default function AdminPortal() {
           description: newProductDescription,
           materials: newProductMaterials,
           images: productImagesList,
-          sizes: ['46 / S', '48 / M', '50 / L', '52 / XL'],
+          sizes: ['S', 'M', 'L', 'XL'],
           colors: productColorsList,
           stockCount: Number(newProductStock),
           inStock: Number(newProductStock) > 0,
@@ -333,7 +412,6 @@ export default function AdminPortal() {
     }
   };
 
-  // Delete product
   const handleDeleteProduct = async (id: string) => {
     if (!confirm('Are you sure you want to remove this piece from the catalog?')) return;
     try {
@@ -344,7 +422,6 @@ export default function AdminPortal() {
     }
   };
 
-  // Filter orders
   const filteredOrders = orders.filter((o) => {
     const matchesStatus = statusFilter === 'all' || o.status === statusFilter;
     const matchesQuery =
@@ -471,12 +548,11 @@ export default function AdminPortal() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <Shield size={18} color="#ffffff" />
               <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 16, letterSpacing: '0.15em', fontWeight: 600 }}>
-                DOUE &bull; ATELIER ADMIN PORTAL
+                DOUE &bull; ADMIN PORTAL
               </h1>
             </div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', color: '#6ee7b7', display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
-              <span>MULTI-ADMIN NOTIFICATION SYSTEM ACTIVE &bull; ORDER DISPATCH READY</span>
             </div>
           </div>
         </div>
@@ -650,7 +726,6 @@ export default function AdminPortal() {
         {/* TAB 1: ORDERS & DETAILS */}
         {activeTab === 'orders' && (
           <div>
-            {/* Filters Bar */}
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
               <div style={{ display: 'flex', gap: 12, flexGrow: 1, maxWidth: 500 }}>
                 <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-card)', border: '1px solid var(--border-medium)', borderRadius: 2, padding: '0 12px', flexGrow: 1 }}>
@@ -665,7 +740,6 @@ export default function AdminPortal() {
                 </div>
               </div>
 
-              {/* Status Filter Pills */}
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {['all', 'pending', 'processing', 'shipped', 'delivered'].map((st) => (
                   <button
@@ -689,7 +763,6 @@ export default function AdminPortal() {
               </div>
             </div>
 
-            {/* Orders Table */}
             <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-medium)', borderRadius: 4, overflowX: 'auto' }}>
               <table className="admin-table">
                 <thead>
@@ -908,7 +981,7 @@ export default function AdminPortal() {
           </div>
         )}
 
-        {/* TAB 3: PRODUCT CATALOG */}
+        {/* TAB 3: PRODUCT CATALOG (WITH EDIT & DELETE) */}
         {activeTab === 'products' && (
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -917,7 +990,7 @@ export default function AdminPortal() {
                   ATELIER CATALOG MANAGEMENT ({products.length} PIECES)
                 </h3>
                 <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                  Manage luxury garments, pricing, stock allocation, and device image uploads
+                  Manage luxury garments, prices, photos, and stock allocation
                 </span>
               </div>
               <button
@@ -955,14 +1028,27 @@ export default function AdminPortal() {
                       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 15, fontWeight: 700 }}>
                         {Number(prod.price || 0).toLocaleString()} EGP
                       </span>
-                      <button
-                        onClick={() => handleDeleteProduct(prod.id)}
-                        className="btn-icon"
-                        style={{ width: 32, height: 32, color: '#fca5a5' }}
-                        title="Delete product"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        {/* EDIT BUTTON */}
+                        <button
+                          onClick={() => handleOpenEditProduct(prod)}
+                          className="btn-luxury-outline"
+                          style={{ padding: '6px 12px', fontSize: 10, display: 'flex', alignItems: 'center', gap: 4 }}
+                          title="Edit Product"
+                        >
+                          <Edit size={12} />
+                          <span>EDIT</span>
+                        </button>
+                        {/* DELETE BUTTON */}
+                        <button
+                          onClick={() => handleDeleteProduct(prod.id)}
+                          className="btn-icon"
+                          style={{ width: 32, height: 32, color: '#fca5a5' }}
+                          title="Delete product"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1052,8 +1138,6 @@ export default function AdminPortal() {
             </div>
 
             <div style={{ padding: '32px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 32 }}>
-
-              {/* Left Column: Items & Customer info */}
               <div>
                 <h4 style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.15em', color: 'var(--text-muted)', marginBottom: 12 }}>
                   CLIENT & SHIPPING DESTINATION
@@ -1068,11 +1152,6 @@ export default function AdminPortal() {
                     {selectedOrder.shippingAddress.address} {selectedOrder.shippingAddress.apartment}<br />
                     {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.postalCode}, {selectedOrder.shippingAddress.country}
                   </div>
-                  {selectedOrder.giftPackaging && (
-                    <div style={{ marginTop: 10, fontSize: 11, color: '#6ee7b7' }}>
-                      🎁 Complimentary Atelier Gift Packaging Included
-                    </div>
-                  )}
                 </div>
 
                 <h4 style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.15em', color: 'var(--text-muted)', marginBottom: 12 }}>
@@ -1097,14 +1176,8 @@ export default function AdminPortal() {
                     </div>
                   ))}
                 </div>
-
-                <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 700 }}>
-                  <span>TOTAL PAID</span>
-                  <span style={{ fontFamily: 'var(--font-mono)' }}>{Number(selectedOrder.total || 0).toLocaleString()} EGP</span>
-                </div>
               </div>
 
-              {/* Right Column: Status & Logistics Management */}
               <div style={{ display: 'flex', flexDirection: 'column', background: 'rgba(255,255,255,0.015)', padding: 24, borderRadius: 4, border: '1px solid var(--border-subtle)' }}>
                 <h4 style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.15em', color: 'var(--text-muted)', marginBottom: 16 }}>
                   UPDATE ORDER FULFILLMENT STATUS
@@ -1117,11 +1190,11 @@ export default function AdminPortal() {
                     onChange={(e) => setNewStatus(e.target.value as OrderStatus)}
                     style={{ width: '100%', padding: '10px 14px' }}
                   >
-                    <option value="pending">Pending (Awaiting Atelier Allocation)</option>
-                    <option value="processing">Processing (In Atelier Tailoring & QC)</option>
-                    <option value="shipped">Shipped (In Insured Transit)</option>
-                    <option value="delivered">Delivered (Completed)</option>
-                    <option value="cancelled">Cancelled (Void)</option>
+                    <option value="pending">Pending</option>
+                    <option value="processing">Processing</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
                   </select>
                 </div>
 
@@ -1154,28 +1227,7 @@ export default function AdminPortal() {
                 >
                   {updatingOrder ? 'UPDATING REGISTRY...' : 'UPDATE ORDER STATUS'}
                 </button>
-
-                <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 16, marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <button
-                    onClick={() => handlePreviewEmail(selectedOrder.id, 'admin')}
-                    className="btn-luxury-outline"
-                    style={{ width: '100%', padding: '10px', fontSize: 11 }}
-                  >
-                    <Eye size={13} />
-                    <span>VIEW ADMIN EMAIL ALERT HTML</span>
-                  </button>
-
-                  <button
-                    onClick={() => handleResendNotification(selectedOrder.id)}
-                    className="btn-luxury-outline"
-                    style={{ width: '100%', padding: '10px', fontSize: 11 }}
-                  >
-                    <Send size={13} />
-                    <span>RESEND NOTIFICATION EMAILS</span>
-                  </button>
-                </div>
               </div>
-
             </div>
           </div>
         </div>
@@ -1218,7 +1270,7 @@ export default function AdminPortal() {
         </div>
       )}
 
-      {/* MODAL 3: ADD PRODUCT MODAL WITH DEVICE UPLOADS & UNLIMITED COLORS */}
+      {/* MODAL 3: ADD PRODUCT MODAL */}
       {showAddProductModal && (
         <div className="modal-backdrop" onClick={() => setShowAddProductModal(false)}>
           <div
@@ -1268,7 +1320,7 @@ export default function AdminPortal() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. 100% Loro Piana Double-Faced Cashmere / Noir"
+                  placeholder="e.g. 100% Loro Piana Double-Faced Cashmere"
                   value={newProductSubtitle}
                   onChange={(e) => setNewProductSubtitle(e.target.value)}
                   style={{ width: '100%' }}
@@ -1300,11 +1352,10 @@ export default function AdminPortal() {
                 </div>
               </div>
 
-              {/* DEVICE IMAGE UPLOADER SECTION */}
               <div style={{ marginBottom: 20, padding: 16, background: 'rgba(255,255,255,0.02)', border: '1px dashed var(--border-medium)', borderRadius: 4 }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: '#fff', marginBottom: 8, cursor: 'pointer' }}>
                   <Upload size={14} />
-                  <span>UPLOAD PICTURES FROM DEVICE (MULTIPLE) *</span>
+                  <span>UPLOAD PICTURES FROM DEVICE *</span>
                 </label>
                 <input
                   type="file"
@@ -1324,7 +1375,7 @@ export default function AdminPortal() {
                           onClick={() => setProductImagesList(productImagesList.filter((_, i) => i !== idx))}
                           style={{ position: 'absolute', top: 2, right: 2, background: 'rgba(0,0,0,0.8)', color: '#fff', border: 'none', borderRadius: '50%', width: 18, height: 18, fontSize: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         >
-                          ×
+                          &times;
                         </button>
                       </div>
                     ))}
@@ -1332,17 +1383,16 @@ export default function AdminPortal() {
                 )}
               </div>
 
-              {/* DYNAMIC UNLIMITED COLOR OPTIONS SECTION */}
               <div style={{ marginBottom: 20, padding: 16, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-medium)', borderRadius: 4 }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: '#fff', marginBottom: 8 }}>
                   <Palette size={14} />
-                  <span>ADD AS MANY COLORS AS YOU WANT</span>
+                  <span>COLOR OPTIONS</span>
                 </label>
 
                 <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
                   <input
                     type="text"
-                    placeholder="Color Name (e.g. Olive Green)"
+                    placeholder="Color Name (e.g. Olive)"
                     value={newColorNameInput}
                     onChange={(e) => setNewColorNameInput(e.target.value)}
                     style={{ flexGrow: 1, padding: '8px 12px', fontSize: 12 }}
@@ -1352,7 +1402,6 @@ export default function AdminPortal() {
                     value={newColorHexInput}
                     onChange={(e) => setNewColorHexInput(e.target.value)}
                     style={{ width: 40, height: 38, background: 'none', border: '1px solid var(--border-medium)', cursor: 'pointer', padding: 2 }}
-                    title="Select Color Hex"
                   />
                   <button
                     type="button"
@@ -1360,7 +1409,7 @@ export default function AdminPortal() {
                     className="btn-luxury-outline"
                     style={{ padding: '9px 14px', fontSize: 11 }}
                   >
-                    ADD COLOR
+                    ADD
                   </button>
                 </div>
 
@@ -1385,7 +1434,7 @@ export default function AdminPortal() {
                 <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>MATERIALS & COMPOSITION</label>
                 <input
                   type="text"
-                  placeholder="e.g. 100% Virgin Cashmere (700gsm); Cupro lining"
+                  placeholder="e.g. 100% Virgin Cashmere"
                   value={newProductMaterials}
                   onChange={(e) => setNewProductMaterials(e.target.value)}
                   style={{ width: '100%' }}
@@ -1406,6 +1455,204 @@ export default function AdminPortal() {
               <button type="submit" className="btn-luxury" style={{ width: '100%', padding: '14px', fontSize: 12 }}>
                 PUBLISH TO ATELIER CATALOG
               </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 4: EDIT PRODUCT MODAL */}
+      {editingProduct && (
+        <div className="modal-backdrop" onClick={() => setEditingProduct(null)}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: 680, maxHeight: '90vh', overflowY: 'auto', padding: 0 }}
+          >
+            <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0e0e12', position: 'sticky', top: 0, zIndex: 10 }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 16, letterSpacing: '0.12em' }}>
+                EDIT ATELIER PIECE // {editingProduct.name}
+              </h2>
+              <button onClick={() => setEditingProduct(null)} className="btn-icon" style={{ width: 36, height: 36 }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateProduct} style={{ padding: '28px 32px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 14, marginBottom: 14 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>PIECE NAME *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editProductName}
+                    onChange={(e) => setEditProductName(e.target.value)}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>CATEGORY *</label>
+                  <select
+                    value={editProductCategory}
+                    onChange={(e) => setEditProductCategory(e.target.value as any)}
+                    style={{ width: '100%' }}
+                  >
+                    <option value="outerwear">Outerwear</option>
+                    <option value="knitwear">Knitwear</option>
+                    <option value="trousers">Trousers</option>
+                    <option value="leather">Leather Goods</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>SUBTITLE *</label>
+                <input
+                  type="text"
+                  required
+                  value={editProductSubtitle}
+                  onChange={(e) => setEditProductSubtitle(e.target.value)}
+                  style={{ width: '100%' }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>PRICE (EGP) *</label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    value={editProductPrice}
+                    onChange={(e) => setEditProductPrice(Number(e.target.value))}
+                    style={{ width: '100%', fontFamily: 'var(--font-mono)' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>STOCK COUNT *</label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    value={editProductStock}
+                    onChange={(e) => setEditProductStock(Number(e.target.value))}
+                    style={{ width: '100%', fontFamily: 'var(--font-mono)' }}
+                  />
+                </div>
+              </div>
+
+              {/* EDIT IMAGES UPLOADER */}
+              <div style={{ marginBottom: 20, padding: 16, background: 'rgba(255,255,255,0.02)', border: '1px dashed var(--border-medium)', borderRadius: 4 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: '#fff', marginBottom: 8, cursor: 'pointer' }}>
+                  <Upload size={14} />
+                  <span>PRODUCT PICTURES (UPLOAD NEW OR MANAGE) *</span>
+                </label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleEditDeviceImageUpload}
+                  style={{ fontSize: 12, color: 'var(--text-secondary)' }}
+                />
+
+                {editProductImagesList.length > 0 && (
+                  <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
+                    {editProductImagesList.map((imgSrc, idx) => (
+                      <div key={idx} style={{ position: 'relative', width: 60, height: 75, borderRadius: 2, overflow: 'hidden', border: '1px solid #fff' }}>
+                        <Image src={imgSrc} alt={`Edit Upload ${idx}`} fill style={{ objectFit: 'cover' }} />
+                        <button
+                          type="button"
+                          onClick={() => setEditProductImagesList(editProductImagesList.filter((_, i) => i !== idx))}
+                          style={{ position: 'absolute', top: 2, right: 2, background: 'rgba(0,0,0,0.8)', color: '#fff', border: 'none', borderRadius: '50%', width: 18, height: 18, fontSize: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* EDIT COLORS */}
+              <div style={{ marginBottom: 20, padding: 16, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-medium)', borderRadius: 4 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: '#fff', marginBottom: 8 }}>
+                  <Palette size={14} />
+                  <span>COLOR OPTIONS</span>
+                </label>
+
+                <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    placeholder="Color Name (e.g. Navy)"
+                    value={editColorNameInput}
+                    onChange={(e) => setEditColorNameInput(e.target.value)}
+                    style={{ flexGrow: 1, padding: '8px 12px', fontSize: 12 }}
+                  />
+                  <input
+                    type="color"
+                    value={editColorHexInput}
+                    onChange={(e) => setEditColorHexInput(e.target.value)}
+                    style={{ width: 40, height: 38, background: 'none', border: '1px solid var(--border-medium)', cursor: 'pointer', padding: 2 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddEditColorOption}
+                    className="btn-luxury-outline"
+                    style={{ padding: '9px 14px', fontSize: 11 }}
+                  >
+                    ADD
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {editProductColorsList.map((col, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 2, fontSize: 11, fontFamily: 'var(--font-mono)' }}>
+                      <span style={{ width: 12, height: 12, borderRadius: '50%', background: col.hex, border: '1px solid rgba(255,255,255,0.2)' }} />
+                      <span>{col.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => setEditProductColorsList(editProductColorsList.filter((_, i) => i !== idx))}
+                        style={{ background: 'none', border: 'none', color: '#fca5a5', cursor: 'pointer', marginLeft: 4, fontSize: 13 }}
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>MATERIALS & COMPOSITION</label>
+                <input
+                  type="text"
+                  value={editProductMaterials}
+                  onChange={(e) => setEditProductMaterials(e.target.value)}
+                  style={{ width: '100%' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: 24 }}>
+                <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>DESCRIPTION</label>
+                <textarea
+                  rows={3}
+                  value={editProductDescription}
+                  onChange={(e) => setEditProductDescription(e.target.value)}
+                  style={{ width: '100%' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: 12 }}>
+                <button
+                  type="button"
+                  onClick={() => setEditingProduct(null)}
+                  className="btn-luxury-outline"
+                  style={{ width: '50%', padding: '14px', fontSize: 11 }}
+                >
+                  CANCEL
+                </button>
+                <button type="submit" className="btn-luxury" style={{ width: '50%', padding: '14px', fontSize: 11 }}>
+                  SAVE CHANGES
+                </button>
+              </div>
             </form>
           </div>
         </div>
