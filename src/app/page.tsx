@@ -322,7 +322,7 @@ export default function HomePage() {
           }}>
             <div>&bull; Double-Faced Virgin Cashmere</div>
             <div>&bull; Limited 1 of 50 Series</div>
-            <div>&bull; Insured Worldwide Courier</div>
+            <div>&bull; Insured Courier</div>
           </div>
         </div>
 
@@ -332,7 +332,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. Luxury Monolith Marquee Strip */}
+      {/* 3. Luxury Monolith Marquee Strip
       <div style={{ background: '#09090b', borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)', padding: '12px 0', overflow: 'hidden' }}>
         <div className="marquee-strip">
           {[...Array(6)].map((_, i) => (
@@ -350,7 +350,7 @@ export default function HomePage() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* 4. Main Collection Showcase */}
       <section id="collection" style={{ padding: '80px 0 100px 0' }}>
