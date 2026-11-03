@@ -33,7 +33,17 @@ export default function Header({
 
   return (
     <>
-      <header className="header-glass" style={{ position: 'sticky', top: 0, zIndex: 40, width: '100%' }}>
+      <header
+        className="header-glass"
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 40,
+          width: '100%',
+          maxWidth: '100vw',
+          boxSizing: 'border-box'
+        }}
+      >
         <div
           className="container"
           style={{
@@ -41,38 +51,41 @@ export default function Header({
             alignItems: 'center',
             justifyContent: 'space-between',
             width: '100%',
+            maxWidth: '100%',
             height: '72px',
-            padding: '0 24px'
+            padding: '0 16px',
+            boxSizing: 'border-box'
           }}
         >
 
-          {/* Left Section: Mobile Menu Button (hidden on desktop) + Brand Title */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* Left Section: Mobile Menu Button + Brand Title */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flexShrink: 1 }}>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="btn-icon mobile-menu-btn"
               title="Toggle Menu"
+              style={{ flexShrink: 0 }}
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
 
             {/* Brand Title */}
-            <Link href="/" style={{ display: 'flex', flexDirection: 'column', textDecoration: 'none' }}>
-              <span style={{
+            <Link href="/" style={{ display: 'flex', flexDirection: 'column', textDecoration: 'none', minWidth: 0, overflow: 'hidden' }}>
+              <span className="brand-title" style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: '18px',
                 fontWeight: 600,
-                letterSpacing: '0.22em',
+                letterSpacing: '0.18em',
                 color: 'var(--text-primary)',
                 textTransform: 'uppercase',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
               }}>
                 DOUE Project
               </span>
-              <span style={{
+              <span className="brand-subtitle" style={{
                 fontFamily: 'var(--font-mono)',
-                fontSize: '8px',
-                letterSpacing: '0.35em',
+                letterSpacing: '0.3em',
                 color: 'var(--text-muted)',
                 textTransform: 'uppercase',
                 marginTop: -1
@@ -100,14 +113,14 @@ export default function Header({
           </nav>
 
           {/* Right Action Icons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
 
             {/* Search Trigger */}
             <button
               onClick={() => setShowSearch(!showSearch)}
               className="btn-icon"
               title="Search catalog"
-              style={{ background: showSearch ? 'var(--bg-elevated)' : 'transparent' }}
+              style={{ background: showSearch ? 'var(--bg-elevated)' : 'transparent', flexShrink: 0 }}
             >
               <Search size={18} />
             </button>
@@ -116,7 +129,7 @@ export default function Header({
             <button
               onClick={onOpenWishlist}
               className="btn-icon"
-              style={{ position: 'relative' }}
+              style={{ position: 'relative', flexShrink: 0 }}
               title="Wishlist"
             >
               <Heart size={18} />
@@ -131,7 +144,7 @@ export default function Header({
             <button
               onClick={onOpenCart}
               className="btn-icon"
-              style={{ position: 'relative' }}
+              style={{ position: 'relative', flexShrink: 0 }}
               title="Shopping Bag"
             >
               <ShoppingBag size={18} />
@@ -154,7 +167,8 @@ export default function Header({
             background: 'var(--bg-elevated)',
             display: 'flex',
             alignItems: 'center',
-            gap: 12
+            gap: 12,
+            boxSizing: 'border-box'
           }}>
             <Search size={16} color="var(--text-muted)" />
             <input
@@ -170,7 +184,8 @@ export default function Header({
                 color: 'var(--text-primary)',
                 fontSize: '13px',
                 outline: 'none',
-                fontFamily: 'var(--font-sans)'
+                fontFamily: 'var(--font-sans)',
+                minWidth: 0
               }}
             />
             <button
@@ -252,6 +267,12 @@ export default function Header({
         .mobile-menu-btn {
           display: flex;
         }
+        .brand-title {
+          font-size: 13px;
+        }
+        .brand-subtitle {
+          font-size: 7px;
+        }
         .nav-link {
           font-size: 11px;
           letter-spacing: 0.2em;
@@ -265,8 +286,8 @@ export default function Header({
         }
         .badge-count {
           position: absolute;
-          top: -2;
-          right: -2;
+          top: -2px;
+          right: -2px;
           background: var(--text-primary);
           color: var(--bg-deep);
           width: 16px;
@@ -285,6 +306,12 @@ export default function Header({
           }
           .mobile-menu-btn {
             display: none !important;
+          }
+          .brand-title {
+            font-size: 18px !important;
+          }
+          .brand-subtitle {
+            font-size: 8px !important;
           }
         }
       `}</style>

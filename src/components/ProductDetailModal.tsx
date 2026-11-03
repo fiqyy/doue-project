@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { X, Check, Shield, Feather, Sparkles, Plus, Minus } from 'lucide-react';
 import { Product } from '@/types';
@@ -24,7 +24,19 @@ export default function ProductDetailModal({
   const [quantity, setQuantity] = useState(1);
   const [addedNotice, setAddedNotice] = useState(false);
 
-  React.useEffect(() => {
+  // Lock background scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
     if (product) {
       setSelectedSize(product.sizes[0] || 'M');
       setSelectedColor(product.colors[0]?.name || 'Noir');
@@ -47,28 +59,53 @@ export default function ProductDetailModal({
   const activeImage = product.images[activeImageIdx] || product.images[0];
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div
+      className="modal-backdrop"
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 50,
+        background: 'rgba(0, 0, 0, 0.85)',
+        backdropFilter: 'blur(8px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px',
+        overflowY: 'auto'
+      }}
+    >
       <div
         className="modal-content"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: 1040, padding: 0, position: 'relative', overflow: 'hidden' }}
+        style={{
+          width: '100%',
+          maxWidth: 1040,
+          maxHeight: '90vh',
+          overflowY: 'auto', // Enables smooth internal vertical scrolling on mobile
+          padding: 0,
+          position: 'relative',
+          background: 'var(--bg-deep, #09090b)',
+          borderRadius: '4px',
+          border: '1px solid var(--border-medium)'
+        }}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
           className="btn-icon"
-          style={{ position: 'absolute', top: 20, right: 20, zIndex: 30, width: 38, height: 38, background: 'rgba(12,12,15,0.85)' }}
+          style={{ position: 'sticky', top: 20, float: 'right', marginRight: 20, marginTop: 20, zIndex: 30, width: 38, height: 38, background: 'rgba(12,12,15,0.85)' }}
         >
           <X size={18} />
         </button>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
 
           {/* Left Column: Image Gallery & Thumbnails */}
           <div style={{ position: 'relative', background: '#09090b', borderRight: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column' }}>
 
             {/* Main Active High-Res Image Display */}
-            <div style={{ position: 'relative', width: '100%', minHeight: '520px', flexGrow: 1, background: 'var(--bg-elevated)' }}>
+            <div style={{ position: 'relative', width: '100%', minHeight: '420px', flexGrow: 1, background: 'var(--bg-elevated)' }}>
               <Image
                 src={activeImage}
                 alt={product.name}
@@ -108,7 +145,7 @@ export default function ProductDetailModal({
           </div>
 
           {/* Right Column: Couture Specs & Purchasing */}
-          <div style={{ padding: '36px 36px 40px 36px', display: 'flex', flexDirection: 'column', background: 'var(--bg-deep)' }}>
+          <div style={{ padding: '24px 24px 32px 24px', display: 'flex', flexDirection: 'column', background: 'var(--bg-deep)' }}>
 
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.25em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 8 }}>
               HAUTE ATELIER // {product.category}
@@ -161,7 +198,6 @@ export default function ProductDetailModal({
                       key={c.name}
                       onClick={() => {
                         setSelectedColor(c.name);
-                        // Automatically switch to the corresponding image index if it exists
                         if (product.images[index]) {
                           setActiveImageIdx(index);
                         }
