@@ -100,9 +100,6 @@ export default function Header({
             <a href="#collection" className="nav-link">
               COLLECTION
             </a>
-            <a href="#lookbook" className="nav-link">
-              LOOKBOOK
-            </a>
             <button
               onClick={onOpenTracking}
               className="nav-link"
