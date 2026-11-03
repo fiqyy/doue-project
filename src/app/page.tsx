@@ -21,7 +21,6 @@ import {
   Lock
 } from 'lucide-react';
 import Header from '@/components/Header';
-import ThreeHeroCanvas from '@/components/ThreeHeroCanvas';
 import ProductCard3D from '@/components/ProductCard3D';
 import ProductDetailModal from '@/components/ProductDetailModal';
 import CartDrawer from '@/components/CartDrawer';
@@ -135,7 +134,6 @@ export default function HomePage() {
 
   useEffect(() => {
     fetchProducts();
-    // Load local cart and wishlist if available
     try {
       const savedCart = localStorage.getItem('doue_cart');
       if (savedCart) setCart(JSON.parse(savedCart));
@@ -259,8 +257,8 @@ export default function HomePage() {
         onOpenAdminLogin={() => setIsAdminAuthModalOpen(true)}
       />
 
-      {/* 2. Hero Section with 3D Three.js Interactive Canvas & Video Backdrop */}
-      <section className="hero-wrapper">
+      {/* 2. Hero Section with Looping Muted Background Video */}
+      <section className="hero-wrapper" style={{ position: 'relative', overflow: 'hidden' }}>
         {/* Ambient video background loop */}
         <video
           autoPlay
@@ -269,16 +267,23 @@ export default function HomePage() {
           playsInline
           className="hero-bg-video"
           src="https://assets.mixkit.co/videos/preview/mixkit-fashion-model-in-a-black-outfit-walking-in-slow-motion-41235-large.mp4"
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1
+          }}
         />
 
-        {/* 3D Interactive Three.js Canvas */}
-        <ThreeHeroCanvas />
-
         {/* Cinematic Vignette Overlay */}
-        <div className="hero-gradient-overlay" />
+        <div className="hero-gradient-overlay" style={{ position: 'absolute', inset: 0, background: 'rgba(5, 5, 6, 0.75)', zIndex: 2 }} />
 
         {/* Hero Content Overlay */}
-        <div className="hero-content">
+        <div className="hero-content" style={{ position: 'relative', zIndex: 3 }}>
           <div className="hero-subtitle">
             <span>VOLUME IV // RUNWAY 2026</span>
           </div>
@@ -296,16 +301,6 @@ export default function HomePage() {
               <span>EXPLORE COLLECTION</span>
               <ArrowRight size={14} />
             </a>
-
-            {/* <button
-              onClick={() => {
-                if (products[0]) handleOpenProduct(products[0], true);
-              }}
-              className="btn-luxury-outline"
-            >
-              <Rotate3D size={15} />
-              <span>3D ATELIER VIEWER</span>
-            </button> */}
           </div>
 
           {/* Floating Luxury Specifications */}
@@ -327,32 +322,12 @@ export default function HomePage() {
         </div>
 
         {/* Scroll Indicator */}
-        <div style={{ position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 10, color: 'var(--text-muted)' }}>
+        <div style={{ position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 3, color: 'var(--text-muted)' }}>
           <ChevronDown size={22} className="animate-bounce" />
         </div>
       </section>
 
-      {/* 3. Luxury Monolith Marquee Strip
-      <div style={{ background: '#09090b', borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)', padding: '12px 0', overflow: 'hidden' }}>
-        <div className="marquee-strip">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 24, paddingRight: 24, fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.25em', color: 'var(--text-secondary)' }}>
-              <span>DOUE ATELIER</span>
-              <span>&bull;</span>
-              <span>HAUTE COUTURE SS26</span>
-              <span>&bull;</span>
-              <span>LORO PIANA CASHMERE</span>
-              <span>&bull;</span>
-              <span>DECONSTRUCTED TAILORING</span>
-              <span>&bull;</span>
-              <span>REAL-TIME INSURED DISPATCH</span>
-              <span>&bull;</span>
-            </div>
-          ))}
-        </div>
-      </div> */}
-
-      {/* 4. Main Collection Showcase */}
+      {/* 3. Main Collection Showcase */}
       <section id="collection" style={{ padding: '80px 0 100px 0' }}>
         <div className="container">
 
@@ -454,7 +429,6 @@ export default function HomePage() {
                   product={product}
                   onSelect={(p) => handleOpenProduct(p, false)}
                   onAddToCart={(p, s, c) => handleAddToCart(p, s, c, 1)}
-                  // onOpen3D={(p) => handleOpenProduct(p, true)}
                   isWishlisted={wishlist.includes(product.id)}
                   onToggleWishlist={handleToggleWishlist}
                 />
@@ -465,158 +439,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. Craftsmanship & Atelier Philosophy Section
-      <section id="atelier" style={{ padding: '100px 0', background: '#0a0a0d', borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
-        <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 60, alignItems: 'center' }}>
-
-            <div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.25em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-                SAVOIR-FAIRE & HERITAGE
-              </span>
-              <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', margin: '12px 0 24px 0', lineHeight: 1.1 }}>
-                THE ARCHITECTURE OF SILENCE
-              </h2>
-              <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: 24 }}>
-                DOUE exists at the confluence of modern architectural discipline and timeless bespoke craftsmanship. Every garment is deconstructed to its fundamental essence: razor-sharp lines, obsidian purity, and sculptural volume.
-              </p>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                <div style={{ display: 'flex', gap: 16 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--bg-card)', border: '1px solid var(--border-medium)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
-                    I
-                  </div>
-                  <div>
-                    <h4 style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: '#fff', marginBottom: 4 }}>
-                      Biella Double-Faced Cashmere
-                    </h4>
-                    <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                      Woven exclusively by historical Italian mills, split and hand-blind-stitched along edges for an unlined drape.
-                    </p>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: 16 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--bg-card)', border: '1px solid var(--border-medium)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
-                    II
-                  </div>
-                  <div>
-                    <h4 style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: '#fff', marginBottom: 4 }}>
-                      Sandblasted Solid Titanium Hardware
-                    </h4>
-                    <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                      Concealed magnetic neck latches and custom clasps engineered with aerospace tolerances.
-                    </p>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: 16 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--bg-card)', border: '1px solid var(--border-medium)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
-                    III
-                  </div>
-                  <div>
-                    <h4 style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: '#fff', marginBottom: 4 }}>
-                      Numbered Limited Editions
-                    </h4>
-                    <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                      Never mass-produced. Each piece is issued in limited batches of 30 to 50, authenticated by laser-etched serial tags.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div> */}
-
-      {/* Editorial visual collage
-            <div style={{ position: 'relative', height: 520, borderRadius: 4, overflow: 'hidden', border: '1px solid var(--border-medium)' }}>
-              <Image
-                src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1200&q=85"
-                alt="Atelier Craftsmanship"
-                fill
-                style={{ objectFit: 'cover' }}
-              />
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 50%, rgba(6,6,7,0.9) 100%)' }} />
-              <div style={{ position: 'absolute', bottom: 24, left: 24, right: 24 }}>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#d4d4d8', letterSpacing: '0.15em' }}>
-                  MILAN ATELIER // TAILORING WORKSHOP
-                </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: '#fff', marginTop: 4 }}>
-                  Precision deconstruction in dark anthracite wool
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section> */}
-
-      {/* 6. Runway Lookbook Showcase
-      <section id="lookbook" style={{ padding: '100px 0' }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 60px auto' }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.25em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-              VOLUME IV EDITORIAL
-            </span>
-            <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 2.8rem)', margin: '12px 0 16px 0' }}>
-              MONOCHROME RUNWAY LOOKS
-            </h2>
-            <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
-              A cinematic lookbook documenting silhouettes in low key lighting, high contrast shadows, and sculpted textures.
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
-            {[
-              {
-                title: 'LOOK 01 // OVERSIZED COUTURE',
-                sub: 'Cashmere Overcoat & Flannel Trousers',
-                img: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=85'
-              },
-              {
-                title: 'LOOK 02 // TECHNICAL GABARDINE',
-                sub: 'Modular Asymmetric Trench & Chelsea Boots',
-                img: 'https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?auto=format&fit=crop&w=1200&q=85'
-              },
-              {
-                title: 'LOOK 03 // DECONSTRUCTED SUITING',
-                sub: 'Floating Canvas Peak Blazer & Tote',
-                img: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=85'
-              }
-            ].map((look, i) => (
-              <div
-                key={i}
-                style={{
-                  position: 'relative',
-                  height: 480,
-                  borderRadius: 2,
-                  overflow: 'hidden',
-                  border: '1px solid var(--border-subtle)',
-                  cursor: 'pointer'
-                }}
-                onClick={() => {
-                  if (products[i]) handleOpenProduct(products[i], false);
-                }}
-              >
-                <Image src={look.img} alt={look.title} fill style={{ objectFit: 'cover' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg, rgba(5,5,6,0.95) 0%, transparent 60%)' }} />
-                <div style={{ position: 'absolute', bottom: 20, left: 20, right: 20 }}>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', color: 'var(--text-muted)' }}>
-                    {look.title}
-                  </div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, color: '#fff', marginTop: 4 }}>
-                    {look.sub}
-                  </div>
-                  <div style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
-                    <span>INSPECT RUNWAY PIECES</span>
-                    <ArrowRight size={12} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section> */}
-
-      {/* 7. Private Salon Allocation Subscription */}
+      {/* 4. Private Salon Allocation Subscription */}
       <section style={{ padding: '80px 0', background: 'var(--bg-card)', borderTop: '1px solid var(--border-subtle)' }}>
         <div className="container" style={{ textAlign: 'center', maxWidth: 580 }}>
           <Sparkles size={24} color="#ffffff" style={{ margin: '0 auto 16px auto' }} />
@@ -655,7 +478,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 8. Luxury Haute Atelier Footer */}
+      {/* 5. Luxury Haute Atelier Footer */}
       <footer style={{ background: '#050506', borderTop: '1px solid var(--border-subtle)', padding: '60px 0 40px 0' }}>
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 40, marginBottom: 50 }}>
@@ -692,7 +515,7 @@ export default function HomePage() {
               </h4>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
                 <li>
-                  <button onClick={() => setIsTrackingOpen(true)} style={{ color: 'inherit', fontSize: 'inherit' }}>
+                  <button onClick={() => setIsTrackingOpen(true)} style={{ color: 'inherit', fontSize: 'inherit', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                     Track Insured Shipment
                   </button>
                 </li>
@@ -714,9 +537,9 @@ export default function HomePage() {
         </div>
       </footer>
 
-      {/* 9. Interactive Modals & Slide-out Drawers */}
+      {/* 6. Interactive Modals & Slide-out Drawers */}
 
-      {/* Product Detail Modal with 3D Turntable Toggle */}
+      {/* Product Detail Modal */}
       <ProductDetailModal
         product={selectedProduct}
         isOpen={isProductModalOpen}
@@ -748,7 +571,6 @@ export default function HomePage() {
         discountCode={appliedDiscountCode}
         giftPackaging={giftPackaging}
         onOrderSuccess={(confirmedOrder) => {
-          // Clear cart
           saveCart([]);
           setTrackingOrderNumber(confirmedOrder.orderNumber);
         }}
@@ -803,7 +625,7 @@ export default function HomePage() {
                           <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, color: '#fff' }}>{item.name}</div>
                           <div style={{ fontSize: 11, color: 'var(--text-muted)', margin: '2px 0 8px 0' }}>{item.subtitle}</div>
                           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700 }}>
-                            ${item.price.toLocaleString()}
+                            {item.price.toLocaleString()} EGP
                           </div>
                         </div>
                       </div>
@@ -815,7 +637,7 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* 10. Hidden Admin Passkey Authentication Modal (Accessed via aro2026) */}
+      {/* 7. Hidden Admin Passkey Authentication Modal */}
       {isAdminAuthModalOpen && (
         <div className="modal-backdrop" onClick={() => setIsAdminAuthModalOpen(false)}>
           <div
@@ -882,7 +704,7 @@ export default function HomePage() {
                   setAdminPasswordInput('');
                   setAdminAuthError('');
                 }}
-                style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textDecoration: 'underline' }}
+                style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}
               >
                 Cancel
               </button>
