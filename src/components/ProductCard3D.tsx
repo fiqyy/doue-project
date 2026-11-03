@@ -146,11 +146,8 @@ export default function ProductCard({
 
         <div className="product-price-row">
           <span className="product-price">{product.price.toLocaleString()} EGP</span>
-          {product.originalPrice && (
-            <span className="product-original-price">{product.originalPrice.toLocaleString()} EGP</span>
-          )}
           <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            {product.stockCount > 0 ? `${product.stockCount} LEFT` : 'WAITLIST'}
+            {product.stockCount < 3 ? `${product.stockCount} LEFT` : 'WAITLIST'}
           </span>
         </div>
       </div>
