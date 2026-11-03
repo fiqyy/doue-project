@@ -30,10 +30,8 @@ export default function CartDrawer({
   if (!isOpen) return null;
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const freeShippingThreshold = 10000;
-
   const discountAmount = (subtotal * discountPercent) / 100;
-  const shippingFee = subtotal >= freeShippingThreshold || subtotal === 0 ? 0 : 45;
+  const shippingFee = 45;
   const taxableAmount = Math.max(0, subtotal - discountAmount);
   const estimatedTax = taxableAmount * 0.08;
   const total = taxableAmount + shippingFee + estimatedTax;
@@ -224,7 +222,7 @@ export default function CartDrawer({
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
                 <span>Insured Courier Delivery</span>
-                <span style={{ fontFamily: 'var(--font-mono)' }}>{shippingFee === 0 ? 'COMPLIMENTARY' : `${shippingFee} EGP`}</span>
+                <span style={{ fontFamily: 'var(--font-mono)' }}>${shippingFee}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
                 <span>Tax & Duties Fee</span>

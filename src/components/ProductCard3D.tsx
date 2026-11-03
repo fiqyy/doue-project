@@ -31,12 +31,14 @@ export default function ProductCard({
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!product.inStock || product.stockCount <= 0) return;
     onAddToCart(product, selectedSize, product.colors[0]?.name || 'Noir');
     setAddedNotice(true);
     setTimeout(() => setAddedNotice(false), 1600);
   };
 
   const currentImage = hoverSecondImage && product.images[1] ? product.images[1] : product.images[0];
+  const isSoldOut = !product.inStock || product.stockCount <= 0;
 
   return (
     <div
@@ -115,43 +117,34 @@ export default function ProductCard({
           </div>
 
           <button
+            type="button"
+            disabled={isSoldOut}
             onClick={handleQuickAdd}
             className="btn-luxury"
             style={{
               padding: '8px 16px',
               fontSize: 11,
-              whiteSpace: 'nowrap'
+              whiteSpace: 'nowrap',
+              opacity: isSoldOut ? 0.4 : 1,
+              cursor: isSoldOut ? 'not-allowed' : 'pointer',
+              background: isSoldOut ? 'var(--bg-card)' : undefined,
+              color: isSoldOut ? 'var(--text-muted)' : undefined,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6
             }}
           >
-            {addedNotice ? (
+            {isSoldOut ? (
+              <span>SOLD OUT</span>
+            ) : addedNotice ? (
               <>
                 <Check size={14} />
                 <span>ADDED</span>
               </>
             ) : (
               <>
-                <button
-                  type="button"
-                  disabled={!product.inStock || product.stockCount <= 0}
-                  onClick={() => {
-                    if (product.inStock && product.stockCount > 0) {
-                      // Your existing click handler logic here
-                    }
-                  }}
-                  className="btn-luxury"
-                  style={{
-                    opacity: (!product.inStock || product.stockCount <= 0) ? 0.4 : 1,
-                    cursor: (!product.inStock || product.stockCount <= 0) ? 'not-allowed' : 'pointer',
-                    background: (!product.inStock || product.stockCount <= 0) ? 'var(--bg-card)' : 'var(--text-primary)',
-                    color: (!product.inStock || product.stockCount <= 0) ? 'var(--text-muted)' : 'var(--bg-deep)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6
-                  }}
-                >
-                  {product.inStock && product.stockCount > 0 ? <Plus size={14} /> : null}
-                  <span>{(!product.inStock || product.stockCount <= 0) ? 'SOLD OUT' : 'ACQUIRE'}</span>
-                </button>
+                <Plus size={14} />
+                <span>ACQUIRE</span>
               </>
             )}
           </button>
@@ -167,7 +160,7 @@ export default function ProductCard({
         <div className="product-price-row">
           <span className="product-price">{product.price.toLocaleString()} EGP</span>
           <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            {product.stockCount < 3 ? `${product.stockCount} LEFT` : ''}
+            {product.stockCount > 0 && product.stockCount < 3 ? `${product.stockCount} LEFT` : ''}
           </span>
         </div>
       </div>

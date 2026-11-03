@@ -47,7 +47,10 @@ export default function ProductDetailModal({
 
   if (!isOpen || !product) return null;
 
+  const isSoldOut = !product.inStock || product.stockCount <= 0;
+
   const handleAdd = () => {
+    if (isSoldOut) return;
     onAddToCart(product, selectedSize, selectedColor, quantity);
     setAddedNotice(true);
     setTimeout(() => {
@@ -84,7 +87,7 @@ export default function ProductDetailModal({
           maxWidth: '960px',
           maxHeight: '90vh',
           overflowY: 'auto',
-          overflowX: 'hidden', // Prevents horizontal bleeding
+          overflowX: 'hidden',
           padding: 0,
           position: 'relative',
           background: 'var(--bg-deep, #09090b)',
@@ -116,13 +119,12 @@ export default function ProductDetailModal({
           <X size={18} color="#fff" />
         </button>
 
-        {/* Modal Main Grid - Stacks vertically on mobile, 2 columns on desktop */}
+        {/* Modal Main Grid */}
         <div className="modal-grid-layout" style={{ display: 'grid', gridTemplateColumns: '1fr', width: '100%', boxSizing: 'border-box' }}>
 
           {/* Left Column: Image Gallery & Thumbnails */}
           <div style={{ position: 'relative', background: '#09090b', width: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
 
-            {/* Main Active High-Res Image Display */}
             <div style={{ position: 'relative', width: '100%', height: '380px', background: 'var(--bg-elevated)' }}>
               <Image
                 src={activeImage}
@@ -134,7 +136,6 @@ export default function ProductDetailModal({
               />
             </div>
 
-            {/* Thumbnail Strip */}
             {product.images && product.images.length > 1 && (
               <div style={{ display: 'flex', gap: 10, padding: 14, background: 'var(--bg-card)', borderTop: '1px solid var(--border-subtle)', overflowX: 'auto', width: '100%', boxSizing: 'border-box' }}>
                 {product.images.map((img, i) => (
@@ -177,13 +178,13 @@ export default function ProductDetailModal({
               {product.subtitle}
             </div>
 
-            {/* Price */}
+            {/* Price & Stock Status Pill */}
             <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: 12, marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid var(--border-subtle)' }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--text-primary)' }}>
                 {product.price.toLocaleString()} EGP
               </span>
-              <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#6ee7b7' }}>
-                {product.stockCount < 0 ? "IN STOCK" : "OUT OF STOCK"}
+              <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-mono)', fontSize: 11, color: isSoldOut ? '#fca5a5' : '#6ee7b7' }}>
+                {isSoldOut ? 'OUT OF STOCK' : 'IN STOCK'}
               </span>
             </div>
 
@@ -198,7 +199,7 @@ export default function ProductDetailModal({
               {product.description}
             </p>
 
-            {/* Color Selection with Auto Image Switching */}
+            {/* Color Selection */}
             {product.colors && product.colors.length > 0 && (
               <div style={{ marginBottom: 20 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 8 }}>
@@ -289,47 +290,37 @@ export default function ProductDetailModal({
               </div>
 
               <button
+                type="button"
+                disabled={isSoldOut}
                 onClick={handleAdd}
                 className="btn-luxury"
-                style={{ flexGrow: 1, minWidth: '180px', padding: '14px 16px', fontSize: 11, boxSizing: 'border-box' }}
+                style={{
+                  flexGrow: 1,
+                  minWidth: '180px',
+                  padding: '14px 16px',
+                  fontSize: 11,
+                  boxSizing: 'border-box',
+                  opacity: isSoldOut ? 0.4 : 1,
+                  cursor: isSoldOut ? 'not-allowed' : 'pointer',
+                  background: isSoldOut ? 'var(--bg-card)' : undefined,
+                  color: isSoldOut ? 'var(--text-muted)' : undefined,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8
+                }}
               >
-                {addedNotice ? (
+                {isSoldOut ? (
+                  <span>SOLD OUT</span>
+                ) : addedNotice ? (
                   <>
                     <Check size={16} />
                     <span>ACQUISITION ADDED</span>
                   </>
                 ) : (
                   <>
-                    <button
-                      type="button"
-                      disabled={!product.inStock || product.stockCount <= 0}
-                      onClick={() => {
-                        if (product.inStock && product.stockCount > 0) {
-                          onAddToCart(product, selectedSize, selectedColor, quantity);
-                        }
-                      }}
-                      className="btn-luxury"
-                      style={{
-                        width: '100%',
-                        padding: '16px',
-                        fontSize: 12,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 8,
-                        opacity: (!product.inStock || product.stockCount <= 0) ? 0.4 : 1,
-                        cursor: (!product.inStock || product.stockCount <= 0) ? 'not-allowed' : 'pointer',
-                        background: (!product.inStock || product.stockCount <= 0) ? 'var(--bg-card)' : 'var(--text-primary)',
-                        color: (!product.inStock || product.stockCount <= 0) ? 'var(--text-muted)' : 'var(--bg-deep)'
-                      }}
-                    >
-                      <Sparkles size={16} />
-                      <span>
-                        {(!product.inStock || product.stockCount <= 0)
-                          ? 'SOLD OUT'
-                          : `ADD TO BAG • ${(product.price * quantity).toLocaleString()} EGP`}
-                      </span>
-                    </button>
+                    <Sparkles size={16} />
+                    <span>ADD TO BAG &bull; {(product.price * quantity).toLocaleString()} EGP</span>
                   </>
                 )}
               </button>
