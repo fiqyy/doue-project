@@ -123,9 +123,9 @@ export default function ProductDetailModal({
         <div className="modal-grid-layout" style={{ display: 'grid', gridTemplateColumns: '1fr', width: '100%', boxSizing: 'border-box' }}>
 
           {/* Left Column: Image Gallery & Thumbnails */}
-          <div style={{ position: 'relative', background: '#09090b', width: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+          <div style={{ position: 'relative', background: '#09090b', width: '100%', display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box' }}>
 
-            <div style={{ position: 'relative', width: '100%', height: '380px', background: 'var(--bg-elevated)' }}>
+            <div style={{ position: 'relative', width: '100%', flexGrow: 1, minHeight: '420px', background: 'var(--bg-elevated)' }}>
               <Image
                 src={activeImage}
                 alt={product.name}
