@@ -66,12 +66,19 @@ export default function HomePage() {
   const [adminAuthLoading, setAdminAuthLoading] = useState(false);
 
   useEffect(() => {
-    // Force play video programmatically on iOS/Safari mount
-    if (videoRef.current) {
-      videoRef.current.play().catch((err) => {
-        console.log("Autoplay prevented by browser policy:", err);
-      });
-    }
+    const playVideo = () => {
+      if (videoRef.current) {
+        videoRef.current.play().catch((err) => {
+          console.log("Autoplay prevented:", err);
+        });
+      }
+    };
+
+    playVideo();
+
+    // Fallback: If iOS blocks autoplay initially, play on the first touch/click anywhere on the page
+    window.addEventListener('touchstart', playVideo, { once: true });
+    window.addEventListener('click', playVideo, { once: true });
 
     let keyBuffer = '';
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -92,7 +99,11 @@ export default function HomePage() {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('touchstart', playVideo);
+      window.removeEventListener('click', playVideo);
+    };
   }, []);
 
   const handleAdminAuthSubmit = async (e: React.FormEvent) => {
