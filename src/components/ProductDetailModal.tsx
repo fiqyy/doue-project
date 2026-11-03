@@ -182,13 +182,8 @@ export default function ProductDetailModal({
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--text-primary)' }}>
                 {product.price.toLocaleString()} EGP
               </span>
-              {product.originalPrice && (
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 15, color: 'var(--text-dim)', textDecoration: 'line-through' }}>
-                  {product.originalPrice.toLocaleString()} EGP
-                </span>
-              )}
               <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#6ee7b7' }}>
-                {product.stockCount} IN STOCK
+                {product.stockCount < 0 ? "IN STOCK" : "OUT OF STOCK"}
               </span>
             </div>
 
@@ -305,8 +300,36 @@ export default function ProductDetailModal({
                   </>
                 ) : (
                   <>
-                    <Sparkles size={16} />
-                    <span>ADD TO BAG &bull; {(product.price * quantity).toLocaleString()} EGP</span>
+                    <button
+                      type="button"
+                      disabled={!product.inStock || product.stockCount <= 0}
+                      onClick={() => {
+                        if (product.inStock && product.stockCount > 0) {
+                          onAddToCart(product, selectedSize, selectedColor, quantity);
+                        }
+                      }}
+                      className="btn-luxury"
+                      style={{
+                        width: '100%',
+                        padding: '16px',
+                        fontSize: 12,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 8,
+                        opacity: (!product.inStock || product.stockCount <= 0) ? 0.4 : 1,
+                        cursor: (!product.inStock || product.stockCount <= 0) ? 'not-allowed' : 'pointer',
+                        background: (!product.inStock || product.stockCount <= 0) ? 'var(--bg-card)' : 'var(--text-primary)',
+                        color: (!product.inStock || product.stockCount <= 0) ? 'var(--text-muted)' : 'var(--bg-deep)'
+                      }}
+                    >
+                      <Sparkles size={16} />
+                      <span>
+                        {(!product.inStock || product.stockCount <= 0)
+                          ? 'SOLD OUT'
+                          : `ADD TO BAG • ${(product.price * quantity).toLocaleString()} EGP`}
+                      </span>
+                    </button>
                   </>
                 )}
               </button>

@@ -130,8 +130,28 @@ export default function ProductCard({
               </>
             ) : (
               <>
-                <Plus size={14} />
-                <span>ACQUIRE</span>
+                <button
+                  type="button"
+                  disabled={!product.inStock || product.stockCount <= 0}
+                  onClick={() => {
+                    if (product.inStock && product.stockCount > 0) {
+                      // Your existing click handler logic here
+                    }
+                  }}
+                  className="btn-luxury"
+                  style={{
+                    opacity: (!product.inStock || product.stockCount <= 0) ? 0.4 : 1,
+                    cursor: (!product.inStock || product.stockCount <= 0) ? 'not-allowed' : 'pointer',
+                    background: (!product.inStock || product.stockCount <= 0) ? 'var(--bg-card)' : 'var(--text-primary)',
+                    color: (!product.inStock || product.stockCount <= 0) ? 'var(--text-muted)' : 'var(--bg-deep)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6
+                  }}
+                >
+                  {product.inStock && product.stockCount > 0 ? <Plus size={14} /> : null}
+                  <span>{(!product.inStock || product.stockCount <= 0) ? 'SOLD OUT' : 'ACQUIRE'}</span>
+                </button>
               </>
             )}
           </button>
