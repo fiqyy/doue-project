@@ -318,14 +318,12 @@ export default function HomePage() {
             <div>&bull; Double-Faced Virgin Cashmere</div>
             <div>&bull; Limited 1 of 50 Series</div>
             <div>&bull; Insured Courier</div>
-
-            {/* Scroll Indicator */}
-            <div style={{ position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 3, color: 'var(--text-muted)' }}>
-              <ChevronDown size={22} className="animate-bounce" />
-            </div>
           </div>
         </div>
-
+        {/* Scroll Indicator */}
+        <div style={{ position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 3, color: 'var(--text-muted)' }}>
+          <ChevronDown size={22} className="animate-bounce" />
+        </div>
       </section>
 
       {/* 3. Main Collection Showcase */}
