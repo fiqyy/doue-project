@@ -88,15 +88,6 @@ export default function HomePage() {
         setIsAdminAuthModalOpen(true);
         return;
       }
-
-      // Typing "admin" anywhere on the homepage triggers the passkey prompt
-      if (e?.key) {
-        keyBuffer += e.key.toLowerCase();
-      } if (keyBuffer.length > 5) keyBuffer = keyBuffer.slice(-5);
-      if (keyBuffer === 'admin') {
-        setIsAdminAuthModalOpen(true);
-        keyBuffer = '';
-      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
