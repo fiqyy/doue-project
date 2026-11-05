@@ -32,9 +32,7 @@ export default function CartDrawer({
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const discountAmount = (subtotal * discountPercent) / 100;
   const shippingFee = 45;
-  const taxableAmount = Math.max(0, subtotal - discountAmount);
-  const estimatedTax = taxableAmount * 0.08;
-  const total = taxableAmount + shippingFee + estimatedTax;
+  const total = subtotal + shippingFee;
 
   const handleApplyPromo = () => {
     setPromoError('');
@@ -223,10 +221,6 @@ export default function CartDrawer({
               <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
                 <span>Insured Courier Delivery</span>
                 <span style={{ fontFamily: 'var(--font-mono)' }}>{shippingFee} EGP</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-                <span>Tax & Duties Fee</span>
-                <span style={{ fontFamily: 'var(--font-mono)' }}>{Math.round(estimatedTax).toLocaleString()} EGP</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, fontWeight: 700, paddingTop: 10, borderTop: '1px solid var(--border-medium)' }}>
                 <span>TOTAL ACQUISITION</span>
