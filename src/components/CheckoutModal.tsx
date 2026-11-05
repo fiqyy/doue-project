@@ -477,7 +477,7 @@ export default function CheckoutModal({
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
 
                   {/* Option 1: Apple Pay */}
-                  <button
+                  {/* <button
                     type="button"
                     onClick={() => setPaymentMethod('apple_pay')}
                     style={{
@@ -499,10 +499,10 @@ export default function CheckoutModal({
                   >
                     <Apple size={18} color="#fff" />
                     <span>Apple Pay</span>
-                  </button>
+                  </button> */}
 
                   {/* Option 2: Google Pay */}
-                  <button
+                  {/* <button
                     type="button"
                     onClick={() => setPaymentMethod('google_pay')}
                     style={{
@@ -524,10 +524,10 @@ export default function CheckoutModal({
                   >
                     <Globe size={18} color="#60a5fa" />
                     <span>Google Pay</span>
-                  </button>
+                  </button> */}
 
                   {/* Option 3: Credit / Debit Card */}
-                  <button
+                  {/* <button
                     type="button"
                     onClick={() => setPaymentMethod('card')}
                     style={{
@@ -549,7 +549,7 @@ export default function CheckoutModal({
                   >
                     <CreditCard size={18} color="#facc15" />
                     <span>Credit / Debit Card</span>
-                  </button>
+                  </button> */}
 
                   {/* Option 4: Cash on Delivery */}
                   <button
