@@ -57,7 +57,7 @@ export default function CheckoutModal({
 
   // Shipping & Payment
   const [shippingMethod, setShippingMethod] = useState<'express_courier' | 'standard'>('express_courier');
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'apple_pay' | 'google_pay' | 'cod'>('card');
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'apple_pay' | 'google_pay' | 'cod'>('cod');
 
   // Card details state
   const [cardNumber, setCardNumber] = useState('');
@@ -83,9 +83,7 @@ export default function CheckoutModal({
   // Always charge shipping fee (45 EGP for express courier)
   const shippingFee = shippingMethod === 'express_courier' ? 45 : 0;
 
-  const taxable = Math.max(0, subtotal - discount);
-  const tax = taxable * 0.08;
-  const total = taxable + shippingFee + tax;
+  const total = subtotal + shippingFee;
 
   const filteredCountries = COUNTRIES.filter(c =>
     c.toLowerCase().includes(countrySearch.toLowerCase())
@@ -122,7 +120,6 @@ export default function CheckoutModal({
           discountCode,
           shippingFee,
           shippingMethod,
-          tax: Math.round(tax * 100) / 100,
           total: Math.round(total * 100) / 100,
           giftPackaging
         })
@@ -154,7 +151,7 @@ export default function CheckoutModal({
         <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.25em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-              DOUe's ATELIER CHECKOUT
+              DOUE's ATELIER CHECKOUT
             </span>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 18, letterSpacing: '0.12em', marginTop: 2 }}>
               {step === 'confirmed' ? 'ACQUISITION CONFIRMED' : 'COMPLETE YOUR ACQUISITION'}
@@ -726,10 +723,6 @@ export default function CheckoutModal({
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 6 }}>
                   <span>Insured Express Courier</span>
                   <span style={{ fontFamily: 'var(--font-mono)' }}>{shippingFee} EGP</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 12 }}>
-                  <span>Atelier Duties & Tax</span>
-                  <span style={{ fontFamily: 'var(--font-mono)' }}>{Math.round(tax).toLocaleString()} EGP</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 20 }}>
                   <span>TOTAL DUE</span>

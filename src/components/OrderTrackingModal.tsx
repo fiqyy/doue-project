@@ -16,7 +16,7 @@ export default function OrderTrackingModal({
   onClose,
   initialOrderNumber = ''
 }: OrderTrackingModalProps) {
-  const [query, setQuery] = useState(initialOrderNumber || 'DOUE-84920');
+  const [query, setQuery] = useState(initialOrderNumber || ' ');
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -46,7 +46,7 @@ export default function OrderTrackingModal({
         setQuery(initialOrderNumber);
         fetchOrder(initialOrderNumber);
       } else {
-        fetchOrder('DOUE-84920'); // Demo preset
+        fetchOrder(' '); // Demo preset
       }
     }
   }, [isOpen, initialOrderNumber]);
