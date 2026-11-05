@@ -25,8 +25,8 @@ const COUNTRIES = [
 export default function CheckoutModal({
   isOpen,
   onClose,
-  items,
-  discount,
+  items = [],
+  discount = 0,
   discountCode,
   giftPackaging,
   onOrderSuccess
@@ -78,7 +78,8 @@ export default function CheckoutModal({
 
   if (!isOpen) return null;
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const safeItems = Array.isArray(items) ? items : [];
+  const subtotal = safeItems.reduce((sum, item) => sum + (Number(item?.price) || 0) * (Number(item?.quantity) || 1), 0);
 
   // Always charge shipping fee (45 EGP for express courier)
   const shippingFee = shippingMethod === 'express_courier' ? 45 : 0;
@@ -86,7 +87,7 @@ export default function CheckoutModal({
   const total = subtotal + shippingFee;
 
   const filteredCountries = COUNTRIES.filter(c =>
-    c.toLowerCase().includes(countrySearch.toLowerCase())
+    (c || '').toLowerCase().includes((countrySearch || '').toLowerCase())
   );
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
@@ -114,7 +115,7 @@ export default function CheckoutModal({
           shippingAddress: { address, apartment, city, state, postalCode, country },
           paymentMethod,
           paymentStatus: paymentMethod === 'cod' ? 'Pending Cash' : 'Paid',
-          items,
+          items: safeItems,
           subtotal,
           discount,
           discountCode,
@@ -208,11 +209,11 @@ export default function CheckoutModal({
               ORDER REFERENCE
             </div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: '#ffffff', margin: '4px 0 16px 0', letterSpacing: '0.1em' }}>
-              {createdOrder.orderNumber}
+              {createdOrder.orderNumber ?? 'N/A'}
             </div>
 
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, maxWidth: 480, margin: '0 auto 24px auto' }}>
-              Thank you, <strong style={{ color: '#fff' }}>{createdOrder.customer.firstName}</strong>. Your luxury acquisition has been securely logged into the Atelier registry.
+              Thank you, <strong style={{ color: '#fff' }}>{createdOrder.customer?.firstName ?? 'Valued Customer'}</strong>. Your luxury acquisition has been securely logged into the Atelier registry.
             </p>
 
             {/* Email Notification Dispatch Status Box */}
@@ -230,7 +231,7 @@ export default function CheckoutModal({
               </div>
               <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
                 &bull; <strong>Admin Alert:</strong> Real-time high-value order email sent to store director.<br />
-                &bull; <strong>Customer Receipt:</strong> Order confirmation & tracking link dispatched to <span style={{ color: '#fff' }}>{createdOrder.customer.email}</span>.
+                &bull; <strong>Customer Receipt:</strong> Order confirmation & tracking link dispatched to <span style={{ color: '#fff' }}>{createdOrder.customer?.email ?? email}</span>.
               </div>
             </div>
 
@@ -476,81 +477,6 @@ export default function CheckoutModal({
                 </label>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
 
-                  {/* Option 1: Apple Pay */}
-                  {/* <button
-                    type="button"
-                    onClick={() => setPaymentMethod('apple_pay')}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '12px 16px',
-                      textAlign: 'left',
-                      border: paymentMethod === 'apple_pay' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
-                      background: paymentMethod === 'apple_pay' ? 'var(--bg-elevated)' : 'var(--bg-surface)',
-                      color: paymentMethod === 'apple_pay' ? 'var(--text-primary)' : 'var(--text-secondary)',
-                      fontSize: 12,
-                      fontFamily: 'var(--font-mono)',
-                      textTransform: 'uppercase',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      borderRadius: 4
-                    }}
-                  >
-                    <Apple size={18} color="#fff" />
-                    <span>Apple Pay</span>
-                  </button> */}
-
-                  {/* Option 2: Google Pay */}
-                  {/* <button
-                    type="button"
-                    onClick={() => setPaymentMethod('google_pay')}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '12px 16px',
-                      textAlign: 'left',
-                      border: paymentMethod === 'google_pay' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
-                      background: paymentMethod === 'google_pay' ? 'var(--bg-elevated)' : 'var(--bg-surface)',
-                      color: paymentMethod === 'google_pay' ? 'var(--text-primary)' : 'var(--text-secondary)',
-                      fontSize: 12,
-                      fontFamily: 'var(--font-mono)',
-                      textTransform: 'uppercase',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      borderRadius: 4
-                    }}
-                  >
-                    <Globe size={18} color="#60a5fa" />
-                    <span>Google Pay</span>
-                  </button> */}
-
-                  {/* Option 3: Credit / Debit Card */}
-                  {/* <button
-                    type="button"
-                    onClick={() => setPaymentMethod('card')}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '12px 16px',
-                      textAlign: 'left',
-                      border: paymentMethod === 'card' ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
-                      background: paymentMethod === 'card' ? 'var(--bg-elevated)' : 'var(--bg-surface)',
-                      color: paymentMethod === 'card' ? 'var(--text-primary)' : 'var(--text-secondary)',
-                      fontSize: 12,
-                      fontFamily: 'var(--font-mono)',
-                      textTransform: 'uppercase',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      borderRadius: 4
-                    }}
-                  >
-                    <CreditCard size={18} color="#facc15" />
-                    <span>Credit / Debit Card</span>
-                  </button> */}
-
                   {/* Option 4: Cash on Delivery */}
                   <button
                     type="button"
@@ -711,22 +637,22 @@ export default function CheckoutModal({
               {/* Order Summary Breakdown */}
               <div style={{ marginTop: 'auto', borderTop: '1px solid var(--border-subtle)', paddingTop: 16 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 6 }}>
-                  <span>Items Total ({items.length})</span>
-                  <span style={{ fontFamily: 'var(--font-mono)' }}>{subtotal.toLocaleString()} EGP</span>
+                  <span>Items Total ({(safeItems ?? []).length})</span>
+                  <span style={{ fontFamily: 'var(--font-mono)' }}>{(Number(subtotal) || 0).toLocaleString()} EGP</span>
                 </div>
-                {discount > 0 && (
+                {Number(discount) > 0 && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#6ee7b7', marginBottom: 6 }}>
-                    <span>VIP Code Discount ({discountCode})</span>
-                    <span style={{ fontFamily: 'var(--font-mono)' }}>-{discount.toLocaleString()} EGP</span>
+                    <span>VIP Code Discount ({discountCode ?? ''})</span>
+                    <span style={{ fontFamily: 'var(--font-mono)' }}>-{(Number(discount) || 0).toLocaleString()} EGP</span>
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 6 }}>
                   <span>Insured Express Courier</span>
-                  <span style={{ fontFamily: 'var(--font-mono)' }}>{shippingFee} EGP</span>
+                  <span style={{ fontFamily: 'var(--font-mono)' }}>{(Number(shippingFee) || 0).toLocaleString()} EGP</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 20 }}>
                   <span>TOTAL DUE</span>
-                  <span style={{ fontFamily: 'var(--font-mono)' }}>{Math.round(total).toLocaleString()} EGP</span>
+                  <span style={{ fontFamily: 'var(--font-mono)' }}>{(Number(Math.round(total)) || 0).toLocaleString()} EGP</span>
                 </div>
 
                 {errorMsg && (
@@ -741,7 +667,7 @@ export default function CheckoutModal({
                   style={{ width: '100%', padding: '16px', fontSize: 12 }}
                 >
                   <Lock size={15} />
-                  <span>AUTHORIZE &bull; {Math.round(total).toLocaleString()} EGP</span>
+                  <span>AUTHORIZE &bull; {(Number(Math.round(total)) || 0).toLocaleString()} EGP</span>
                 </button>
 
                 <div style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-dim)', marginTop: 10, fontFamily: 'var(--font-mono)' }}>

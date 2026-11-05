@@ -90,8 +90,9 @@ export default function HomePage() {
       }
 
       // Typing "admin" anywhere on the homepage triggers the passkey prompt
-      keyBuffer += e.key.toLowerCase();
-      if (keyBuffer.length > 5) keyBuffer = keyBuffer.slice(-5);
+      if (e?.key) {
+        keyBuffer += e.key.toLowerCase();
+      } if (keyBuffer.length > 5) keyBuffer = keyBuffer.slice(-5);
       if (keyBuffer === 'admin') {
         setIsAdminAuthModalOpen(true);
         keyBuffer = '';
