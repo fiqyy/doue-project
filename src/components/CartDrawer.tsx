@@ -99,10 +99,12 @@ export default function CartDrawer({
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--text-secondary)', marginBottom: 8 }}>
                 YOUR BAG IS EMPTY
               </div>
-              <p style={{ fontSize: 13, marginBottom: 24 }}>Explore the Volume IV Noir collection to acquire iconic pieces.</p>
-              <button onClick={onClose} className="btn-luxury" style={{ fontSize: 11 }}>
-                EXPLORE COLLECTION
-              </button>
+              <p style={{ fontSize: 13, marginBottom: 24 }}>Explore the Volume I Noir collection to acquire iconic pieces.</p>
+              <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <a href="#collection" className="btn-luxury">
+                  <span>EXPLORE COLLECTION</span>
+                </a>
+              </div>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>

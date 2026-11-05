@@ -306,7 +306,7 @@ export default function HomePage() {
         {/* Hero Content Overlay */}
         <div className="hero-content" style={{ position: 'relative', zIndex: 3 }}>
           <div className="hero-subtitle">
-            <span>VOLUME IV // RUNWAY 2026</span>
+            <span>VOLUME I // WC '26</span>
           </div>
 
           <h1 className="hero-title">

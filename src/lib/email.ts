@@ -136,7 +136,7 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
     }
                 <tr>
                   <td>Insured Express Courier</td>
-                  <td align="right" style="font-family: 'Courier New', monospace; color: #d4d4d8;">${order.shippingFee} EGP}</td>
+                  <td align="right" style="font-family: 'Courier New', monospace; color: #d4d4d8;">${order.shippingFee} EGP</td>
                 </tr>
                 <tr>
                   <td style="padding-top: 12px; font-weight: 700; color: #ffffff; font-size: 15px; border-top: 1px solid #27272a;">TOTAL</td>
