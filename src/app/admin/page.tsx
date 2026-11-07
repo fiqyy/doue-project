@@ -1356,24 +1356,41 @@ export default function AdminPortal() {
                 </div>
               </div>
 
+              {/* IMAGE URL INPUT SYSTEM */}
               <div style={{ marginBottom: 20, padding: 16, background: 'rgba(255,255,255,0.02)', border: '1px dashed var(--border-medium)', borderRadius: 4 }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: '#fff', marginBottom: 8, cursor: 'pointer' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: '#fff', marginBottom: 8 }}>
                   <Upload size={14} />
-                  <span>UPLOAD PICTURES FROM DEVICE *</span>
+                  <span>PRODUCT IMAGE URL *</span>
                 </label>
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleDeviceImageUpload}
-                  style={{ fontSize: 12, color: 'var(--text-secondary)' }}
-                />
+
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input
+                    type="url"
+                    id="imageUrlInput"
+                    placeholder="https://images.unsplash.com/... or Cloudinary URL"
+                    style={{ flexGrow: 1, padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)', fontSize: 12 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const inputEl = document.getElementById('imageUrlInput') as HTMLInputElement;
+                      if (inputEl && inputEl.value.trim()) {
+                        setProductImagesList((prev) => [...prev, inputEl.value.trim()]);
+                        inputEl.value = '';
+                      }
+                    }}
+                    className="btn-luxury-outline"
+                    style={{ padding: '10px 16px', fontSize: 11 }}
+                  >
+                    ADD URL
+                  </button>
+                </div>
 
                 {productImagesList.length > 0 && (
                   <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
                     {productImagesList.map((imgSrc, idx) => (
                       <div key={idx} style={{ position: 'relative', width: 60, height: 75, borderRadius: 2, overflow: 'hidden', border: '1px solid #fff' }}>
-                        <Image src={imgSrc} alt={`Uploaded ${idx}`} fill style={{ objectFit: 'cover' }} />
+                        <Image src={imgSrc} alt={`Product ${idx}`} fill style={{ objectFit: 'cover' }} />
                         <button
                           type="button"
                           onClick={() => setProductImagesList(productImagesList.filter((_, i) => i !== idx))}
