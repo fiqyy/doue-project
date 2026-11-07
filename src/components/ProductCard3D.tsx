@@ -53,11 +53,11 @@ export default function ProductCard({
     >
       {/* Product Image Section */}
       <div className="product-image-container">
-        {product.badge && (
+        {/* {product.badge && (
           <div className="product-badge">
             {product.badge}
           </div>
-        )}
+        )} */}
 
         <button
           onClick={(e) => {
