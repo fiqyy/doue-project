@@ -2,6 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
+    domains: [
+      'images.unsplash.com',
+      'res.cloudinary.com',
+      'your-storage-domain.com'
+    ],
     remotePatterns: [
       {
         protocol: 'https',
@@ -14,7 +19,7 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'cdn.pixabay.com',
-      }
+      },
     ],
   },
 };
