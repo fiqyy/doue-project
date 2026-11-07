@@ -480,13 +480,10 @@ export default function HomePage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 40, marginBottom: 50 }}>
             <div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, letterSpacing: '0.2em', fontWeight: 600, color: '#fff' }}>
-                DOUE
-              </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.25em', color: 'var(--text-muted)', margin: '4px 0 16px 0' }}>
-                HAUTE ATELIER DECONSTRUCTION
+                DOUE PROJECT
               </div>
               <p style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                Architectural silhouettes tailored in Egypt. Pure obsidian black and slate grey aesthetics.
+                Architectural silhouettes tailored in Egypt. Pure aesthetics.
               </p>
             </div>
 
