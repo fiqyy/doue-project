@@ -83,15 +83,6 @@ export default function Header({
               }}>
                 DOUE Project
               </span>
-              <span className="brand-subtitle" style={{
-                fontFamily: 'var(--font-mono)',
-                letterSpacing: '0.3em',
-                color: 'var(--text-muted)',
-                textTransform: 'uppercase',
-                marginTop: -1
-              }}>
-                HAUTE ATELIER
-              </span>
             </Link>
           </div>
 
