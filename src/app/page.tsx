@@ -80,7 +80,6 @@ export default function HomePage() {
     window.addEventListener('touchstart', playVideo, { once: true });
     window.addEventListener('click', playVideo, { once: true });
 
-    let keyBuffer = '';
     const handleKeyDown = (e: KeyboardEvent) => {
       // Hotkey: Ctrl+Shift+A or Alt+A opens Admin Auth Passkey prompt
       if ((e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') || (e.altKey && e.key.toLowerCase() === 'a')) {
@@ -255,6 +254,16 @@ export default function HomePage() {
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg-deep)', position: 'relative' }}>
 
+      {/* Responsive Grid Override Style for Mobile 2-Columns */}
+      <style jsx global>{`
+        @media (max-width: 768px) {
+          .product-grid-catalog {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 10px !important;
+          }
+        }
+      `}</style>
+
       {/* 1. Global Navigation Header */}
       <Header
         cart={cart}
@@ -269,7 +278,6 @@ export default function HomePage() {
 
       {/* 2. Hero Section with Looping Muted Background Video */}
       <section className="hero-wrapper" style={{ position: 'relative', overflow: 'hidden' }}>
-        {/* Ambient video background loop */}
         <video
           ref={videoRef}
           autoPlay
@@ -291,10 +299,8 @@ export default function HomePage() {
           }}
         />
 
-        {/* Cinematic Vignette Overlay */}
         <div className="hero-gradient-overlay" style={{ position: 'absolute', inset: 0, background: 'rgba(5, 5, 6, 0.75)', zIndex: 2 }} />
 
-        {/* Hero Content Overlay */}
         <div className="hero-content" style={{ position: 'relative', zIndex: 3 }}>
           <div className="hero-subtitle">
             <span>VOLUME I // WC '26</span>
@@ -304,10 +310,6 @@ export default function HomePage() {
             DOUE PROJECT
           </h1>
 
-          {/* <p className="hero-desc">
-            Aesthetic elegance forged in deep obsidian and slate grey. Crafted in Biella from double-faced cashmere, deconstructed floating canvases, and hand-finished titanium hardware.
-          </p> */}
-
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
             <a href="#collection" className="btn-luxury">
               <span>EXPLORE COLLECTION</span>
@@ -315,7 +317,7 @@ export default function HomePage() {
             </a>
           </div>
         </div>
-        {/* Scroll Indicator */}
+
         <div style={{ position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 3, color: 'var(--text-muted)' }}>
           <ChevronDown size={22} className="animate-bounce" />
         </div>
@@ -325,7 +327,6 @@ export default function HomePage() {
       <section id="collection" style={{ padding: '80px 0 100px 0' }}>
         <div className="container">
 
-          {/* Section Heading */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 20, marginBottom: 40 }}>
             <div>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.25em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
@@ -336,13 +337,12 @@ export default function HomePage() {
               </h2>
             </div>
 
-            {/* Sort Dropdown */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>SORT BY:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                style={{ background: 'var(--bg-card)', padding: '8px 14px', fontSize: 12, fontFamily: 'var(--font-mono)' }}
+                style={{ background: 'var(--bg-card)', padding: '8px 14px', fontSize: 12, fontFamily: 'var(--font-mono)', color: '#fff', border: '1px solid var(--border-subtle)' }}
               >
                 <option value="featured">Featured Runway</option>
                 <option value="price-asc">Price: Ascending</option>
@@ -351,7 +351,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Category Filter Tabs */}
           <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 16, marginBottom: 40 }}>
             {categories.map((cat) => (
               <button
@@ -368,7 +367,8 @@ export default function HomePage() {
                   background: selectedCategory === cat.id ? 'var(--text-primary)' : 'var(--bg-card)',
                   color: selectedCategory === cat.id ? 'var(--bg-deep)' : 'var(--text-secondary)',
                   border: selectedCategory === cat.id ? '1px solid var(--text-primary)' : '1px solid var(--border-subtle)',
-                  fontWeight: selectedCategory === cat.id ? 600 : 400
+                  fontWeight: selectedCategory === cat.id ? 600 : 400,
+                  cursor: 'pointer'
                 }}
               >
                 {cat.label}
@@ -376,7 +376,6 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Product Grid */}
           {loading ? (
             <div style={{ textAlign: 'center', padding: '100px 0' }}>
               <div
@@ -412,11 +411,14 @@ export default function HomePage() {
               </button>
             </div>
           ) : (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
-              gap: '12px'
-            }}>
+            <div
+              className="product-grid-catalog"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                gap: '24px'
+              }}
+            >
               {filteredProducts.map((product) => (
                 <ProductCard3D
                   key={product.id}
@@ -462,7 +464,7 @@ export default function HomePage() {
                 placeholder="Enter your VIP email address..."
                 value={newsletterEmail}
                 onChange={(e) => setNewsletterEmail(e.target.value)}
-                style={{ flexGrow: 1, padding: '14px 18px', fontSize: 13 }}
+                style={{ flexGrow: 1, padding: '14px 18px', fontSize: 13, background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
               />
               <button type="submit" className="btn-luxury" style={{ padding: '14px 28px', fontSize: 11 }}>
                 JOIN CIRCLE
@@ -476,8 +478,6 @@ export default function HomePage() {
       <footer style={{ background: '#050506', borderTop: '1px solid var(--border-subtle)', padding: '60px 0 40px 0' }}>
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 40, marginBottom: 50 }}>
-
-            {/* Brand Col */}
             <div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, letterSpacing: '0.2em', fontWeight: 600, color: '#fff' }}>
                 DOUE
@@ -490,7 +490,6 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Navigation Col */}
             <div>
               <h4 style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.15em', color: '#fff', marginBottom: 14 }}>
                 COLLECTION
@@ -502,7 +501,6 @@ export default function HomePage() {
               </ul>
             </div>
 
-            {/* Client Concierge Col */}
             <div>
               <h4 style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.15em', color: '#fff', marginBottom: 14 }}>
                 CLIENT CONCIERGE
@@ -515,10 +513,8 @@ export default function HomePage() {
                 </li>
               </ul>
             </div>
-
           </div>
 
-          {/* Bottom Bar */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, borderTop: '1px solid var(--border-subtle)', paddingTop: 24, fontSize: 11, color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
             <div
               onClick={() => setIsAdminAuthModalOpen(true)}
@@ -532,8 +528,6 @@ export default function HomePage() {
       </footer>
 
       {/* 6. Interactive Modals & Slide-out Drawers */}
-
-      {/* Product Detail Modal */}
       <ProductDetailModal
         product={selectedProduct}
         isOpen={isProductModalOpen}
@@ -541,7 +535,6 @@ export default function HomePage() {
         onAddToCart={handleAddToCart}
       />
 
-      {/* Shopping Cart Drawer */}
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
@@ -556,7 +549,6 @@ export default function HomePage() {
         }}
       />
 
-      {/* Checkout Modal */}
       <CheckoutModal
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
@@ -570,14 +562,13 @@ export default function HomePage() {
         }}
       />
 
-      {/* Order Tracking Modal */}
       <OrderTrackingModal
         isOpen={isTrackingOpen}
         onClose={() => setIsTrackingOpen(false)}
         initialOrderNumber={trackingOrderNumber}
       />
 
-      {/* Wishlist Slideover / Modal */}
+      {/* Wishlist Slideover */}
       {isWishlistOpen && (
         <div className="drawer-backdrop" onClick={() => setIsWishlistOpen(false)}>
           <div className="drawer-container" onClick={(e) => e.stopPropagation()}>
@@ -613,7 +604,7 @@ export default function HomePage() {
                         style={{ display: 'flex', gap: 14, paddingBottom: 16, borderBottom: '1px solid var(--border-subtle)', cursor: 'pointer' }}
                       >
                         <div style={{ position: 'relative', width: 70, height: 90, flexShrink: 0, borderRadius: 2, overflow: 'hidden' }}>
-                          <Image src={item.images[0]} alt={item.name} fill style={{ objectFit: 'cover' }} />
+                          <img src={item.images[0]} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                         <div style={{ flexGrow: 1 }}>
                           <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, color: '#fff' }}>{item.name}</div>
@@ -672,7 +663,7 @@ export default function HomePage() {
                   placeholder="Enter passkey (aro2026)"
                   value={adminPasswordInput}
                   onChange={(e) => setAdminPasswordInput(e.target.value)}
-                  style={{ width: '100%', padding: '12px 16px', fontSize: 14, textAlign: 'center', letterSpacing: '0.2em' }}
+                  style={{ width: '100%', padding: '12px 16px', fontSize: 14, textAlign: 'center', letterSpacing: '0.2em', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                 />
               </div>
 

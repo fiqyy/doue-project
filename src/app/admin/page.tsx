@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   Shield,
   ShoppingBag,
@@ -29,7 +28,8 @@ import {
   X,
   Lock,
   Upload,
-  Palette
+  Palette,
+  Link as LinkIcon
 } from 'lucide-react';
 import { Order, Product, AdminStats, EmailNotification, AdminSettings, OrderStatus } from '@/types';
 
@@ -73,8 +73,9 @@ export default function AdminPortal() {
   const [newProductMaterials, setNewProductMaterials] = useState('');
   const [newProductStock, setNewProductStock] = useState(10);
 
-  // Device Image Uploads & Dynamic Colors for Add
+  // Dynamic Image Inputs & Colors for Add
   const [productImagesList, setProductImagesList] = useState<string[]>([]);
+  const [imageUrlInput, setImageUrlInput] = useState('');
   const [productColorsList, setProductColorsList] = useState<CustomColorOption[]>([
     { name: 'Obsidian Black', hex: '#0a0a0a' },
     { name: 'Rich Cognac Brown', hex: '#5c4033' }
@@ -92,6 +93,7 @@ export default function AdminPortal() {
   const [editProductMaterials, setEditProductMaterials] = useState('');
   const [editProductStock, setEditProductStock] = useState(10);
   const [editProductImagesList, setEditProductImagesList] = useState<string[]>([]);
+  const [editImageUrlInput, setEditImageUrlInput] = useState('');
   const [editProductColorsList, setEditProductColorsList] = useState<CustomColorOption[]>([]);
   const [editColorNameInput, setEditColorNameInput] = useState('');
   const [editColorHexInput, setEditColorHexInput] = useState('#8b5cf6');
@@ -201,6 +203,19 @@ export default function AdminPortal() {
     setPasswordInput('');
   };
 
+  // Image URL addition handlers
+  const handleAddImageUrl = () => {
+    if (!imageUrlInput.trim()) return;
+    setProductImagesList((prev) => [...prev, imageUrlInput.trim()]);
+    setImageUrlInput('');
+  };
+
+  const handleAddEditImageUrl = () => {
+    if (!editImageUrlInput.trim()) return;
+    setEditProductImagesList((prev) => [...prev, editImageUrlInput.trim()]);
+    setEditImageUrlInput('');
+  };
+
   // Handle device image file selection for Add Product
   const handleDeviceImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -254,7 +269,7 @@ export default function AdminPortal() {
     e.preventDefault();
     if (!editingProduct) return;
     if (editProductImagesList.length === 0) {
-      alert('Please keep or upload at least one image.');
+      alert('Please keep or upload at least one image URL.');
       return;
     }
 
@@ -373,7 +388,7 @@ export default function AdminPortal() {
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (productImagesList.length === 0) {
-      alert('Please upload at least one image for this luxury piece.');
+      alert('Please add at least one image URL for this luxury piece.');
       return;
     }
     try {
@@ -401,6 +416,7 @@ export default function AdminPortal() {
         setNewProductName('');
         setNewProductSubtitle('');
         setProductImagesList([]);
+        setImageUrlInput('');
         setProductColorsList([
           { name: 'Obsidian Black', hex: '#0a0a0a' },
           { name: 'Rich Cognac Brown', hex: '#5c4033' }
@@ -521,7 +537,7 @@ export default function AdminPortal() {
   return (
     <div style={{ minHeight: '100vh', background: '#070709', color: '#fcfcfd' }}>
 
-      {/* Mobile-Only Responsive CSS Overrides (Desktop view remains 100% untouched) */}
+      {/* Mobile-Only Responsive CSS Overrides */}
       <style jsx global>{`
         @media (max-width: 768px) {
           .admin-header-bar {
@@ -814,7 +830,7 @@ export default function AdminPortal() {
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                             {order.items.slice(0, 3).map((item, i) => (
                               <div key={i} style={{ position: 'relative', width: 28, height: 36, borderRadius: 2, overflow: 'hidden', border: '1px solid var(--border-subtle)' }}>
-                                <Image src={item.image} alt="piece" fill style={{ objectFit: 'cover' }} />
+                                <img src={item.image} alt="piece" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                               </div>
                             ))}
                             {order.items.length > 3 && (
@@ -1011,7 +1027,11 @@ export default function AdminPortal() {
               {products.map((prod) => (
                 <div key={prod.id} style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 4, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                   <div style={{ position: 'relative', width: '100%', height: 260 }}>
-                    <Image src={prod.images[0]} alt={prod.name} fill style={{ objectFit: 'cover' }} />
+                    <img
+                      src={prod.images[0]}
+                      alt={prod.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                     <span style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(0,0,0,0.8)', padding: '4px 8px', borderRadius: 2, fontSize: 10, fontFamily: 'var(--font-mono)' }}>
                       {prod.category.toUpperCase()}
                     </span>
@@ -1166,7 +1186,7 @@ export default function AdminPortal() {
                   {selectedOrder.items.map((it, idx) => (
                     <div key={idx} style={{ display: 'flex', gap: 12, padding: 10, background: 'var(--bg-card)', borderRadius: 2 }}>
                       <div style={{ position: 'relative', width: 44, height: 56, flexShrink: 0, borderRadius: 2, overflow: 'hidden' }}>
-                        <Image src={it.image} alt={it.name} fill style={{ objectFit: 'cover' }} />
+                        <img src={it.image} alt={it.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
                       <div style={{ flexGrow: 1 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>{it.name}</div>
@@ -1356,29 +1376,24 @@ export default function AdminPortal() {
                 </div>
               </div>
 
-              {/* IMAGE URL INPUT SYSTEM */}
+              {/* DUAL IMAGE UPLOAD & URL INPUT SYSTEM */}
               <div style={{ marginBottom: 20, padding: 16, background: 'rgba(255,255,255,0.02)', border: '1px dashed var(--border-medium)', borderRadius: 4 }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: '#fff', marginBottom: 8 }}>
-                  <Upload size={14} />
-                  <span>PRODUCT IMAGE URL *</span>
+                  <LinkIcon size={14} />
+                  <span>IMAGE URL INPUT (RECOMMENDED) *</span>
                 </label>
 
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
                   <input
                     type="url"
-                    id="imageUrlInput"
-                    placeholder="https://images.unsplash.com/... or Cloudinary URL"
+                    placeholder="Paste direct HTTPS image link (e.g. Unsplash, Cloudinary)..."
+                    value={imageUrlInput}
+                    onChange={(e) => setImageUrlInput(e.target.value)}
                     style={{ flexGrow: 1, padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)', fontSize: 12 }}
                   />
                   <button
                     type="button"
-                    onClick={() => {
-                      const inputEl = document.getElementById('imageUrlInput') as HTMLInputElement;
-                      if (inputEl && inputEl.value.trim()) {
-                        setProductImagesList((prev) => [...prev, inputEl.value.trim()]);
-                        inputEl.value = '';
-                      }
-                    }}
+                    onClick={handleAddImageUrl}
                     className="btn-luxury-outline"
                     style={{ padding: '10px 16px', fontSize: 11 }}
                   >
@@ -1386,11 +1401,23 @@ export default function AdminPortal() {
                   </button>
                 </div>
 
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginBottom: 6, cursor: 'pointer' }}>
+                  <Upload size={14} />
+                  <span>OR UPLOAD LOCAL DEVICE IMAGE</span>
+                </label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleDeviceImageUpload}
+                  style={{ fontSize: 12, color: 'var(--text-secondary)' }}
+                />
+
                 {productImagesList.length > 0 && (
                   <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
                     {productImagesList.map((imgSrc, idx) => (
                       <div key={idx} style={{ position: 'relative', width: 60, height: 75, borderRadius: 2, overflow: 'hidden', border: '1px solid #fff' }}>
-                        <Image src={imgSrc} alt={`Product ${idx}`} fill style={{ objectFit: 'cover' }} />
+                        <img src={imgSrc} alt={`Product ${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         <button
                           type="button"
                           onClick={() => setProductImagesList(productImagesList.filter((_, i) => i !== idx))}
@@ -1561,11 +1588,34 @@ export default function AdminPortal() {
                 </div>
               </div>
 
-              {/* EDIT IMAGES UPLOADER */}
+              {/* EDIT IMAGES UPLOADER & URL MANAGER */}
               <div style={{ marginBottom: 20, padding: 16, background: 'rgba(255,255,255,0.02)', border: '1px dashed var(--border-medium)', borderRadius: 4 }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: '#fff', marginBottom: 8, cursor: 'pointer' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: '#fff', marginBottom: 8 }}>
+                  <LinkIcon size={14} />
+                  <span>ADD IMAGE URL *</span>
+                </label>
+
+                <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                  <input
+                    type="url"
+                    placeholder="Paste direct HTTPS image URL..."
+                    value={editImageUrlInput}
+                    onChange={(e) => setEditImageUrlInput(e.target.value)}
+                    style={{ flexGrow: 1, padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)', fontSize: 12 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddEditImageUrl}
+                    className="btn-luxury-outline"
+                    style={{ padding: '10px 16px', fontSize: 11 }}
+                  >
+                    ADD URL
+                  </button>
+                </div>
+
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginBottom: 6, cursor: 'pointer' }}>
                   <Upload size={14} />
-                  <span>PRODUCT PICTURES (UPLOAD NEW OR MANAGE) *</span>
+                  <span>OR UPLOAD NEW FROM DEVICE</span>
                 </label>
                 <input
                   type="file"
@@ -1579,7 +1629,7 @@ export default function AdminPortal() {
                   <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
                     {editProductImagesList.map((imgSrc, idx) => (
                       <div key={idx} style={{ position: 'relative', width: 60, height: 75, borderRadius: 2, overflow: 'hidden', border: '1px solid #fff' }}>
-                        <Image src={imgSrc} alt={`Edit Upload ${idx}`} fill style={{ objectFit: 'cover' }} />
+                        <img src={imgSrc} alt={`Edit Upload ${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         <button
                           type="button"
                           onClick={() => setEditProductImagesList(editProductImagesList.filter((_, i) => i !== idx))}
