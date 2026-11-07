@@ -281,12 +281,18 @@ export default function Header({
           justify-content: center;
           font-family: var(--font-mono);
         }
+        .brand-title-wrapper {
+          display: none; /* Hidden by default on Mobile */
+        }
         @media (min-width: 900px) {
           .desktop-nav {
             display: flex !important;
           }
           .mobile-menu-btn {
             display: none !important;
+          }
+          .brand-title {
+            display: flex !important; /* Shown on Desktop */
           }
           .brand-title {
             font-size: 18px !important;
