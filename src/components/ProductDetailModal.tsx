@@ -167,7 +167,7 @@ export default function ProductDetailModal({
           <div style={{ padding: '24px 20px 32px 20px', display: 'flex', flexDirection: 'column', background: 'var(--bg-deep)', width: '100%', boxSizing: 'border-box' }}>
 
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.25em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 8 }}>
-              HAUTE ATELIER // {product.category}
+              {product.category}
             </div>
 
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 22, letterSpacing: '0.08em', marginBottom: 6, color: 'var(--text-primary)', wordBreak: 'break-word' }}>
@@ -336,7 +336,7 @@ export default function ProductDetailModal({
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, color: '#fff', fontWeight: 600 }}>
                 <Shield size={14} />
-                <span>ATELIER PROVENANCE & CARE</span>
+                <span>PROVENANCE & CARE</span>
               </div>
               <p style={{ wordBreak: 'break-word' }}>{product.care}</p>
             </div>
