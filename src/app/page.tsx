@@ -482,9 +482,6 @@ export default function HomePage() {
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, letterSpacing: '0.2em', fontWeight: 600, color: '#fff' }}>
                 DOUE PROJECT
               </div>
-              <p style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                Architectural silhouettes tailored in Egypt. Pure aesthetics.
-              </p>
             </div>
 
             <div>
