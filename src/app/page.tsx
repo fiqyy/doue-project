@@ -314,23 +314,6 @@ export default function HomePage() {
               <ArrowRight size={14} />
             </a>
           </div>
-
-          {/* Floating Luxury Specifications */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: 32,
-            marginTop: 48,
-            fontSize: 11,
-            fontFamily: 'var(--font-mono)',
-            color: 'var(--text-secondary)',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase'
-          }}>
-            <div>&bull; Double-Faced Virgin Cashmere</div>
-            <div>&bull; Limited 1 of 50 Series</div>
-            <div>&bull; Insured Courier</div>
-          </div>
         </div>
         {/* Scroll Indicator */}
         <div style={{ position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 3, color: 'var(--text-muted)' }}>
@@ -431,8 +414,8 @@ export default function HomePage() {
           ) : (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))',
-              gap: 28
+              gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+              gap: '12px'
             }}>
               {filteredProducts.map((product) => (
                 <ProductCard3D
