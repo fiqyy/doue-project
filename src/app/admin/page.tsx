@@ -521,8 +521,50 @@ export default function AdminPortal() {
   return (
     <div style={{ minHeight: '100vh', background: '#070709', color: '#fcfcfd' }}>
 
+      {/* Mobile-Only Responsive CSS Overrides (Desktop view remains 100% untouched) */}
+      <style jsx global>{`
+        @media (max-width: 768px) {
+          .admin-header-bar {
+            padding: 12px 16px !important;
+            flex-wrap: wrap !important;
+            gap: 12px !important;
+          }
+          .admin-header-title {
+            font-size: 13px !important;
+          }
+          .admin-header-actions {
+            gap: 8px !important;
+          }
+          .admin-main-container {
+            padding: 16px 12px !important;
+          }
+          .admin-tabs-nav {
+            overflow-x: auto !important;
+            white-space: nowrap !important;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+            gap: 4px !important;
+          }
+          .admin-tabs-nav button {
+            padding: 10px 14px !important;
+            font-size: 11px !important;
+            flex-shrink: 0;
+          }
+          .admin-products-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px !important;
+          }
+          .modal-content {
+            margin: 12px !important;
+            max-width: 95vw !important;
+            max-height: 92vh !important;
+            padding: 0 !important;
+          }
+        }
+      `}</style>
+
       {/* Top Admin Header */}
-      <header style={{
+      <header className="admin-header-bar" style={{
         background: 'rgba(14, 14, 18, 0.95)',
         backdropFilter: 'blur(20px)',
         borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
@@ -547,14 +589,14 @@ export default function AdminPortal() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <Shield size={18} color="#ffffff" />
-              <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 16, letterSpacing: '0.15em', fontWeight: 600 }}>
+              <h1 className="admin-header-title" style={{ fontFamily: 'var(--font-display)', fontSize: 16, letterSpacing: '0.15em', fontWeight: 600 }}>
                 DOUE &bull; ADMIN PORTAL
               </h1>
             </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div className="admin-header-actions" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button
             onClick={fetchData}
             disabled={refreshing}
@@ -583,66 +625,10 @@ export default function AdminPortal() {
       </header>
 
       {/* Main Admin Content Container */}
-      <div className="container" style={{ padding: '32px 24px' }}>
-
-        {/* Top KPI Metric Cards */}
-        {stats && (
-          <div className="admin-grid">
-            <div className="admin-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', color: 'var(--text-muted)' }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em' }}>TOTAL ATELIER REVENUE</span>
-              </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 26, fontWeight: 700, color: '#ffffff', margin: '8px 0 4px 0' }}>
-                {Number(stats.totalRevenue || 0).toLocaleString()} EGP
-              </div>
-              <div style={{ fontSize: 11, color: '#6ee7b7', fontFamily: 'var(--font-mono)' }}>
-                Avg Acquisition Value: {Number(stats.averageOrderValue || 0).toLocaleString()} EGP
-              </div>
-            </div>
-
-            <div className="admin-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', color: 'var(--text-muted)' }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em' }}>TOTAL ACQUISITIONS</span>
-                <ShoppingBag size={16} color="#ffffff" />
-              </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 26, fontWeight: 700, color: '#ffffff', margin: '8px 0 4px 0' }}>
-                {stats.totalOrders}
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
-                {stats.pendingOrders} Pending &bull; {stats.processingOrders} Processing
-              </div>
-            </div>
-
-            <div className="admin-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', color: 'var(--text-muted)' }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em' }}>IN TRANSIT / SHIPPED</span>
-                <Truck size={16} color="#a855f7" />
-              </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 26, fontWeight: 700, color: '#d8b4fe', margin: '8px 0 4px 0' }}>
-                {stats.shippedOrders}
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
-                {stats.deliveredOrders} Delivered Worldwide
-              </div>
-            </div>
-
-            <div className="admin-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', color: 'var(--text-muted)' }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em' }}>ADMIN NOTIFICATION EMAILS</span>
-                <Mail size={16} color="#ffffff" />
-              </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600, color: '#ffffff', margin: '12px 0 4px 0', wordBreak: 'break-all' }}>
-                {settings?.adminEmail || 'fiqyyyy@gmail.com'}
-              </div>
-              <div style={{ fontSize: 11, color: '#6ee7b7', fontFamily: 'var(--font-mono)' }}>
-                {emails.length} Order Alerts Dispatched
-              </div>
-            </div>
-          </div>
-        )}
+      <div className="container admin-main-container" style={{ padding: '32px 24px' }}>
 
         {/* Tab Navigation */}
-        <div style={{ display: 'flex', gap: 12, borderBottom: '1px solid var(--border-medium)', marginBottom: 28 }}>
+        <div className="admin-tabs-nav" style={{ display: 'flex', gap: 12, borderBottom: '1px solid var(--border-medium)', marginBottom: 28 }}>
           <button
             onClick={() => setActiveTab('orders')}
             style={{
@@ -655,7 +641,12 @@ export default function AdminPortal() {
               fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
-              gap: 8
+              gap: 8,
+              background: 'none',
+              borderTop: 'none',
+              borderLeft: 'none',
+              borderRight: 'none',
+              cursor: 'pointer'
             }}
           >
             <ShoppingBag size={14} />
@@ -674,7 +665,12 @@ export default function AdminPortal() {
               fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
-              gap: 8
+              gap: 8,
+              background: 'none',
+              borderTop: 'none',
+              borderLeft: 'none',
+              borderRight: 'none',
+              cursor: 'pointer'
             }}
           >
             <Mail size={14} />
@@ -693,7 +689,12 @@ export default function AdminPortal() {
               fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
-              gap: 8
+              gap: 8,
+              background: 'none',
+              borderTop: 'none',
+              borderLeft: 'none',
+              borderRight: 'none',
+              cursor: 'pointer'
             }}
           >
             <Package size={14} />
@@ -712,7 +713,12 @@ export default function AdminPortal() {
               fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
-              gap: 8
+              gap: 8,
+              background: 'none',
+              borderTop: 'none',
+              borderLeft: 'none',
+              borderRight: 'none',
+              cursor: 'pointer'
             }}
           >
             <Sliders size={14} />
@@ -732,7 +738,7 @@ export default function AdminPortal() {
                     placeholder="Search order #, customer, email..."
                     value={orderSearch}
                     onChange={(e) => setOrderSearch(e.target.value)}
-                    style={{ background: 'none', border: 'none', width: '100%', fontSize: 13 }}
+                    style={{ background: 'none', border: 'none', width: '100%', fontSize: 13, outline: 'none', color: '#fff', padding: '10px 8px' }}
                   />
                 </div>
               </div>
@@ -751,7 +757,8 @@ export default function AdminPortal() {
                       textTransform: 'uppercase',
                       background: statusFilter === st ? 'var(--text-primary)' : 'var(--bg-card)',
                       color: statusFilter === st ? 'var(--bg-deep)' : 'var(--text-secondary)',
-                      border: '1px solid var(--border-subtle)'
+                      border: '1px solid var(--border-subtle)',
+                      cursor: 'pointer'
                     }}
                   >
                     {st}
@@ -878,7 +885,7 @@ export default function AdminPortal() {
         {/* TAB 2: EMAIL DISPATCH LOGS */}
         {activeTab === 'emails' && (
           <div>
-            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-medium)', borderRadius: 4, padding: '20px', marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-medium)', borderRadius: 4, padding: '20px', marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
               <div>
                 <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 14, letterSpacing: '0.1em' }}>
                   MULTI-ADMIN NOTIFICATION DISPATCHER
@@ -981,7 +988,7 @@ export default function AdminPortal() {
         {/* TAB 3: PRODUCT CATALOG (WITH EDIT & DELETE) */}
         {activeTab === 'products' && (
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
               <div>
                 <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 16, letterSpacing: '0.1em' }}>
                   ATELIER CATALOG MANAGEMENT ({products.length} PIECES)
@@ -1000,7 +1007,7 @@ export default function AdminPortal() {
               </button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+            <div className="admin-products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
               {products.map((prod) => (
                 <div key={prod.id} style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 4, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                   <div style={{ position: 'relative', width: '100%', height: 260 }}>
@@ -1056,7 +1063,7 @@ export default function AdminPortal() {
 
         {/* TAB 4: SETTINGS */}
         {activeTab === 'settings' && (
-          <div style={{ maxWidth: 640 }}>
+          <div style={{ maxWidth: 640, margin: '0 auto' }}>
             <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-medium)', borderRadius: 4, padding: '32px' }}>
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 16, letterSpacing: '0.12em', marginBottom: 6 }}>
                 ADMIN EMAIL NOTIFICATION CONFIGURATION
@@ -1076,7 +1083,7 @@ export default function AdminPortal() {
                     value={adminEmailInput}
                     onChange={(e) => setAdminEmailInput(e.target.value)}
                     placeholder="fiqyyyy@gmail.com, admin2@gmail.com"
-                    style={{ width: '100%', fontSize: 14 }}
+                    style={{ width: '100%', fontSize: 14, padding: '10px 12px', color: '#fff', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-medium)', borderRadius: 2 }}
                   />
                   <span style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 4, display: 'block' }}>
                     All listed admins will instantly receive high-value order notification alerts upon checkout.
@@ -1092,7 +1099,7 @@ export default function AdminPortal() {
                     required
                     value={storeNameInput}
                     onChange={(e) => setStoreNameInput(e.target.value)}
-                    style={{ width: '100%', fontSize: 14 }}
+                    style={{ width: '100%', fontSize: 14, padding: '10px 12px', color: '#fff', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-medium)', borderRadius: 2 }}
                   />
                 </div>
 
@@ -1185,7 +1192,7 @@ export default function AdminPortal() {
                   <select
                     value={newStatus}
                     onChange={(e) => setNewStatus(e.target.value as OrderStatus)}
-                    style={{ width: '100%', padding: '10px 14px' }}
+                    style={{ width: '100%', padding: '10px 14px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                   >
                     <option value="pending">Pending</option>
                     <option value="processing">Processing</option>
@@ -1201,7 +1208,7 @@ export default function AdminPortal() {
                     type="text"
                     value={carrier}
                     onChange={(e) => setCarrier(e.target.value)}
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                   />
                 </div>
 
@@ -1212,7 +1219,7 @@ export default function AdminPortal() {
                     placeholder="e.g. DHL-EX-8492019US"
                     value={trackingNumber}
                     onChange={(e) => setTrackingNumber(e.target.value)}
-                    style={{ width: '100%', fontFamily: 'var(--font-mono)' }}
+                    style={{ width: '100%', fontFamily: 'var(--font-mono)', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                   />
                 </div>
 
@@ -1294,7 +1301,7 @@ export default function AdminPortal() {
                     placeholder="e.g. Sculpted Double-Breasted Peacoat"
                     value={newProductName}
                     onChange={(e) => setNewProductName(e.target.value)}
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                   />
                 </div>
                 <div>
@@ -1302,7 +1309,7 @@ export default function AdminPortal() {
                   <select
                     value={newProductCategory}
                     onChange={(e) => setNewProductCategory(e.target.value as any)}
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                   >
                     <option value="outerwear">Outerwear</option>
                     <option value="knitwear">Knitwear</option>
@@ -1320,7 +1327,7 @@ export default function AdminPortal() {
                   placeholder="e.g. 100% Loro Piana Double-Faced Cashmere"
                   value={newProductSubtitle}
                   onChange={(e) => setNewProductSubtitle(e.target.value)}
-                  style={{ width: '100%' }}
+                  style={{ width: '100%', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                 />
               </div>
 
@@ -1333,7 +1340,7 @@ export default function AdminPortal() {
                     min="1"
                     value={newProductPrice}
                     onChange={(e) => setNewProductPrice(Number(e.target.value))}
-                    style={{ width: '100%', fontFamily: 'var(--font-mono)' }}
+                    style={{ width: '100%', fontFamily: 'var(--font-mono)', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                   />
                 </div>
                 <div>
@@ -1344,7 +1351,7 @@ export default function AdminPortal() {
                     min="1"
                     value={newProductStock}
                     onChange={(e) => setNewProductStock(Number(e.target.value))}
-                    style={{ width: '100%', fontFamily: 'var(--font-mono)' }}
+                    style={{ width: '100%', fontFamily: 'var(--font-mono)', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                   />
                 </div>
               </div>
@@ -1392,7 +1399,7 @@ export default function AdminPortal() {
                     placeholder="Color Name (e.g. Olive)"
                     value={newColorNameInput}
                     onChange={(e) => setNewColorNameInput(e.target.value)}
-                    style={{ flexGrow: 1, padding: '8px 12px', fontSize: 12 }}
+                    style={{ flexGrow: 1, padding: '8px 12px', fontSize: 12, background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                   />
                   <input
                     type="color"
@@ -1434,7 +1441,7 @@ export default function AdminPortal() {
                   placeholder="e.g. 100% Virgin Cashmere"
                   value={newProductMaterials}
                   onChange={(e) => setNewProductMaterials(e.target.value)}
-                  style={{ width: '100%' }}
+                  style={{ width: '100%', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                 />
               </div>
 
@@ -1445,7 +1452,7 @@ export default function AdminPortal() {
                   value={newProductDescription}
                   onChange={(e) => setNewProductDescription(e.target.value)}
                   placeholder="Artisanal garment description..."
-                  style={{ width: '100%' }}
+                  style={{ width: '100%', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                 />
               </div>
 
@@ -1483,7 +1490,7 @@ export default function AdminPortal() {
                     required
                     value={editProductName}
                     onChange={(e) => setEditProductName(e.target.value)}
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                   />
                 </div>
                 <div>
@@ -1491,7 +1498,7 @@ export default function AdminPortal() {
                   <select
                     value={editProductCategory}
                     onChange={(e) => setEditProductCategory(e.target.value as any)}
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                   >
                     <option value="outerwear">Outerwear</option>
                     <option value="knitwear">Knitwear</option>
@@ -1508,7 +1515,7 @@ export default function AdminPortal() {
                   required
                   value={editProductSubtitle}
                   onChange={(e) => setEditProductSubtitle(e.target.value)}
-                  style={{ width: '100%' }}
+                  style={{ width: '100%', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                 />
               </div>
 
@@ -1521,7 +1528,7 @@ export default function AdminPortal() {
                     min="1"
                     value={editProductPrice}
                     onChange={(e) => setEditProductPrice(Number(e.target.value))}
-                    style={{ width: '100%', fontFamily: 'var(--font-mono)' }}
+                    style={{ width: '100%', fontFamily: 'var(--font-mono)', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                   />
                 </div>
                 <div>
@@ -1532,7 +1539,7 @@ export default function AdminPortal() {
                     min="0"
                     value={editProductStock}
                     onChange={(e) => setEditProductStock(Number(e.target.value))}
-                    style={{ width: '100%', fontFamily: 'var(--font-mono)' }}
+                    style={{ width: '100%', fontFamily: 'var(--font-mono)', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                   />
                 </div>
               </div>
@@ -1582,7 +1589,7 @@ export default function AdminPortal() {
                     placeholder="Color Name (e.g. Navy)"
                     value={editColorNameInput}
                     onChange={(e) => setEditColorNameInput(e.target.value)}
-                    style={{ flexGrow: 1, padding: '8px 12px', fontSize: 12 }}
+                    style={{ flexGrow: 1, padding: '8px 12px', fontSize: 12, background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                   />
                   <input
                     type="color"
@@ -1623,17 +1630,17 @@ export default function AdminPortal() {
                   type="text"
                   value={editProductMaterials}
                   onChange={(e) => setEditProductMaterials(e.target.value)}
-                  style={{ width: '100%' }}
+                  style={{ width: '100%', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                 />
               </div>
 
               <div style={{ marginBottom: 24 }}>
-                <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>DESCRIPTION</label>
+                <label style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginBottom: 4 }}>DESCRIPTION</label>
                 <textarea
                   rows={3}
                   value={editProductDescription}
                   onChange={(e) => setEditProductDescription(e.target.value)}
-                  style={{ width: '100%' }}
+                  style={{ width: '100%', padding: '10px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
                 />
               </div>
 
