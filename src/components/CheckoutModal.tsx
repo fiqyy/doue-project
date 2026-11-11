@@ -94,7 +94,7 @@ export default function CheckoutModal({
     e.preventDefault();
     setErrorMsg('');
 
-    if (!firstName || !email || !address || !city || !postalCode || !country) {
+    if (!firstName || !email || !address || !city || !postalCode || !country || !phone) {
       setErrorMsg('Please complete all required shipping fields including country.');
       return;
     }
@@ -298,7 +298,7 @@ export default function CheckoutModal({
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>PHONE NUMBER</label>
+                  <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>PHONE NUMBER *</label>
                   <input
                     type="tel"
                     value={phone}
