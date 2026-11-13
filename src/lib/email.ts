@@ -207,7 +207,7 @@ export async function dispatchOrderNotifications(order: Order): Promise<{
   const adminEmail = settings.adminEmail || 'doueprojecteg@gmail.com';
   const customerEmail = order.customer.email;
 
-  const adminSubject = `[DOUÈ PROJECT] Order Alert: ${order.orderNumber} ($${order.total.toLocaleString()})`;
+  const adminSubject = `[DOUÈ PROJECT] Order Alert: ${order.orderNumber} (${order.total.toLocaleString()} EGP)`;
   const customerSubject = `DOUÈ PROJECT — Acquisition Confirmed #${order.orderNumber}`;
 
   const adminHtml = await generateOrderEmailHtml(order, 'admin');
@@ -231,7 +231,7 @@ export async function dispatchOrderNotifications(order: Order): Promise<{
 
       // Send to Admin
       await transporter.sendMail({
-        from: `"${settings.senderName}" <${user}>`,
+        from: `"${settings.senderName}" <${process.env.SMTP_FROM || user}>`,
         to: adminEmail,
         subject: adminSubject,
         html: adminHtml
@@ -239,7 +239,7 @@ export async function dispatchOrderNotifications(order: Order): Promise<{
 
       // Send to Customer
       await transporter.sendMail({
-        from: `"${settings.senderName}" <${user}>`,
+        from: `"${settings.senderName}" <${process.env.SMTP_FROM || user}>`,
         to: customerEmail,
         subject: customerSubject,
         html: customerHtml
