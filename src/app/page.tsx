@@ -59,7 +59,7 @@ export default function HomePage() {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
 
-  // Hidden Admin Access via Password (aro2026)
+  // Hidden Admin Access via Password
   const [isAdminAuthModalOpen, setIsAdminAuthModalOpen] = useState(false);
   const [adminPasswordInput, setAdminPasswordInput] = useState('');
   const [adminAuthError, setAdminAuthError] = useState('');
@@ -651,7 +651,7 @@ export default function HomePage() {
                   type="password"
                   required
                   autoFocus
-                  placeholder="Enter passkey (aro2026)"
+                  placeholder="Enter admin passkey..."
                   value={adminPasswordInput}
                   onChange={(e) => setAdminPasswordInput(e.target.value)}
                   style={{ width: '100%', padding: '12px 16px', fontSize: 14, textAlign: 'center', letterSpacing: '0.2em', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)' }}
