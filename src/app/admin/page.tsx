@@ -587,7 +587,7 @@ export default function AdminPortal() {
                 type="password"
                 required
                 autoFocus
-                placeholder="Enter passkey (aro2026)"
+                placeholder="Enter admin passkey..."
                 value={passwordInput}
                 onChange={(e) => setPasswordInput(e.target.value)}
                 style={{

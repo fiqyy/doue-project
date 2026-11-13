@@ -48,9 +48,9 @@
   "emails": [],
   "settings": {
     "adminEmail": "[EMAIL_ADDRESS]",
-    "storeName": "DOUE PROJECT",
+    "storeName": "DOUÈ PROJECT",
     "currency": "EGP",
     "smtpConfigured": false,
-    "senderName": "DOUE PROJECT"
+    "senderName": "DOUÈ PROJECT"
   }
 }
