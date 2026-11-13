@@ -31,10 +31,10 @@
   --status-delivered: #10b981;
   --status-cancelled: #ef4444;
 
-  /* Fonts */
+/* Fonts */
   --font-serif: 'Cormorant Garamond', 'Cinzel', serif;
-  --font-display: 'Cinzel', serif;
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-mono: 'Space Grotesk', monospace;
 
   /* Elevations & Glass */

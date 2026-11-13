@@ -245,10 +245,10 @@ export default function HomePage() {
 
   const categories = [
     { id: 'all', label: 'All Pieces' },
-    { id: 'outerwear', label: 'Outerwear' },
-    { id: 'knitwear', label: 'Knitwear' },
-    { id: 'trousers', label: 'Trousers' },
-    { id: 'leather', label: 'Leather Goods' }
+    // { id: 'outerwear', label: 'Outerwear' },
+    // { id: 'knitwear', label: 'Knitwear' },
+    // { id: 'trousers', label: 'Trousers' },
+    // { id: 'leather', label: 'Leather Goods' }
   ];
 
   return (
@@ -329,15 +329,12 @@ export default function HomePage() {
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 20, marginBottom: 40 }}>
             <div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.25em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-                CURATED SILHOUETTES
-              </span>
               <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)', marginTop: 4 }}>
-                THE MONOCHROME VAULT
+                SUEDE COLLECTION
               </h2>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>SORT BY:</span>
               <select
                 value={sortBy}
@@ -348,7 +345,7 @@ export default function HomePage() {
                 <option value="price-asc">Price: Ascending</option>
                 <option value="price-desc">Price: Descending</option>
               </select>
-            </div>
+            </div> */}
           </div>
 
           <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 16, marginBottom: 40 }}>
@@ -486,12 +483,12 @@ export default function HomePage() {
 
             <div>
               <h4 style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.15em', color: '#fff', marginBottom: 14 }}>
-                COLLECTION
+                SUEDE COLLECTION
               </h4>
               <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
                 <li><a href="#collection" onClick={() => setSelectedCategory('outerwear')}>Outerwear</a></li>
-                <li><a href="#collection" onClick={() => setSelectedCategory('knitwear')}>Knitwear</a></li>
-                <li><a href="#collection" onClick={() => setSelectedCategory('leather')}>Leather</a></li>
+                {/* <li><a href="#collection" onClick={() => setSelectedCategory('knitwear')}>Knitwear</a></li>
+                <li><a href="#collection" onClick={() => setSelectedCategory('leather')}>Leather</a></li> */}
               </ul>
             </div>
 
