@@ -7,20 +7,24 @@ import { TrendingUp, DollarSign, ShoppingBag, Calendar, Sparkles, Award } from '
 interface AdminChartProps {
   data: DailyStat[];
   currency?: string;
+  rangeLabel?: string;
 }
 
-export default function AdminChart({ data = [], currency = 'EGP' }: AdminChartProps) {
+export default function AdminChart({ data = [], currency = 'EGP', rangeLabel }: AdminChartProps) {
   const [metric, setMetric] = useState<'revenue' | 'orders'>('revenue');
-  const [range, setRange] = useState<'7d' | '14d'>('14d');
+  const [range, setRange] = useState<'all' | '7d' | '14d'>('all');
   const [selectedPointIndex, setSelectedPointIndex] = useState<number | null>(null);
 
   // Filter data based on selected range
   const chartData = useMemo(() => {
     if (!data || data.length === 0) return [];
-    if (range === '7d') {
+    if (range === '7d' && data.length > 7) {
       return data.slice(-7);
     }
-    return data.slice(-14);
+    if (range === '14d' && data.length > 14) {
+      return data.slice(-14);
+    }
+    return data;
   }, [data, range]);
 
   // Compute stats for current view
@@ -527,37 +531,6 @@ export default function AdminChart({ data = [], currency = 'EGP' }: AdminChartPr
               {metric === 'revenue'
                 ? `~${avgValue.toLocaleString()} ${currency} / day`
                 : `${avgValue} orders / day`}
-            </div>
-          </div>
-        </div>
-
-        {/* Metric 3: Touch Hint for Mobile */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          background: 'rgba(255, 255, 255, 0.02)',
-          padding: '8px 12px',
-          borderRadius: 4
-        }}>
-          <div style={{
-            width: 28,
-            height: 28,
-            borderRadius: '50%',
-            background: 'rgba(59, 130, 246, 0.15)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#60a5fa'
-          }}>
-            <Sparkles size={14} />
-          </div>
-          <div>
-            <div style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>
-              Mobile Tip
-            </div>
-            <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
-              Tap any column to inspect daily orders & revenue breakdown
             </div>
           </div>
         </div>

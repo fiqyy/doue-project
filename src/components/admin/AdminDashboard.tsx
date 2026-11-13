@@ -93,14 +93,14 @@ export default function AdminDashboard({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: '#10b981' }}>
-                REAL-TIME ATELIER FEED ACTIVE
+                REAL-TIME FEED ACTIVE
               </span>
               <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                 &bull; Auto-sync enabled
               </span>
             </div>
             <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>
-              Executive overview for {thisMonthName} &bull; Real-time client order pacing
+             Overview for {thisMonthName} &bull;
             </p>
           </div>
         </div>

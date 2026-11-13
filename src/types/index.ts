@@ -114,6 +114,16 @@ export type AdminStats = {
     revenueGrowthMoM: number;
     ordersGrowthMoM: number;
   };
+  dateRange?: {
+    startDate: string;
+    endDate: string;
+    label: string;
+    daysCount: number;
+    periodRevenue: number;
+    periodOrders: number;
+    periodAOV: number;
+    periodAvgOrdersPerDay: number;
+  };
 };
 
 export type AdminSettings = {

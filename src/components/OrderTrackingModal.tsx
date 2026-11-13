@@ -81,9 +81,6 @@ export default function OrderTrackingModal({
         {/* Header */}
         <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.25em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-              HAUTE ATELIER DISPATCH
-            </span>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 18, letterSpacing: '0.12em', marginTop: 2 }}>
               TRACK YOUR ACQUISITION
             </h2>
@@ -250,7 +247,7 @@ export default function OrderTrackingModal({
                         </div>
                       </div>
                       <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600 }}>
-                        ${(item.price * item.quantity).toLocaleString()}
+                        {(item.price * item.quantity).toLocaleString()} EGP
                       </div>
                     </div>
                   ))}
