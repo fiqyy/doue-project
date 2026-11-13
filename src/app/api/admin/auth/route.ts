@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'aro2026';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'douep@$$w0rd26';
 const AUTH_COOKIE_NAME = 'doue_admin_session';
 
 export async function POST(request: NextRequest) {
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Password matches aro2026
+    // Password matches douep@$$w0rd26
     const response = NextResponse.json({
       success: true,
       message: 'Atelier authentication verified',
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Set secure auth cookie
-    response.cookies.set(AUTH_COOKIE_NAME, 'authenticated_aro2026', {
+    response.cookies.set(AUTH_COOKIE_NAME, 'authenticated_douep@$$w0rd26', {
       httpOnly: false, // Accessible to client-side auth check
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   const cookie = request.cookies.get(AUTH_COOKIE_NAME);
-  const isAuthenticated = cookie?.value === 'authenticated_aro2026';
+  const isAuthenticated = cookie?.value === 'authenticated_douep@$$w0rd26';
 
   return NextResponse.json({
     authenticated: isAuthenticated
