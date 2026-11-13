@@ -1455,7 +1455,7 @@ export default function AdminPortal() {
                 ADMIN NOTIFICATION CONFIGURATION
               </h3>
               <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 20, lineHeight: 1.5 }}>
-                Configure recipient emails for luxury order alerts. Multiple admin emails can be separated by commas (e.g. <span style={{ color: '#fff' }}>fiqyyyy@gmail.com, partner@douenoir.com</span>).
+                Configure recipient emails for luxury order alerts. Multiple admin emails can be separated by commas (e.g. <span style={{ color: '#fff' }}>doueprojecteg@gmail.com</span>).
               </p>
 
               <form onSubmit={handleSaveSettings}>
@@ -1468,7 +1468,7 @@ export default function AdminPortal() {
                     required
                     value={adminEmailInput}
                     onChange={(e) => setAdminEmailInput(e.target.value)}
-                    placeholder="fiqyyyy@gmail.com, admin2@gmail.com"
+                    placeholder="doueprojecteg@gmail.com"
                     style={{
                       width: '100%',
                       fontSize: 16,

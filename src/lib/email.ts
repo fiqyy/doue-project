@@ -68,23 +68,23 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
             <td style="padding: 32px 32px 16px 32px;">
               ${isAdmin
       ? `<div style="display: inline-block; padding: 6px 14px; background-color: #27272a; border: 1px solid #3f3f46; border-radius: 20px; font-family: 'Courier New', monospace; font-size: 11px; letter-spacing: 0.15em; color: #f4f4f5; text-transform: uppercase;">
-                      🚨 ADMIN NOTIFICATION: NEW ATELIER ORDER
-                    </div>
-                    <h2 style="font-family: 'Georgia', serif; font-size: 22px; font-weight: 400; color: #ffffff; margin: 16px 0 8px 0;">
-                      New Order Placed: ${order.total.toLocaleString()} EGP
-                    </h2>
-                    <p style="font-size: 14px; line-height: 1.6; color: #a1a1aa; margin: 0 0 24px 0;">
-                      A new luxury order has been placed on the storefront. Review order details below or manage this acquisition directly inside the Admin Portal.
-                    </p>`
+                    🚨 ADMIN NOTIFICATION: NEW ATELIER ORDER
+                  </div>
+                  <h2 style="font-family: 'Georgia', serif; font-size: 22px; font-weight: 400; color: #ffffff; margin: 16px 0 8px 0;">
+                    New Order Placed: ${order.total.toLocaleString()} EGP
+                  </h2>
+                  <p style="font-size: 14px; line-height: 1.6; color: #a1a1aa; margin: 0 0 24px 0;">
+                    A new luxury order has been placed on the storefront. Review order details below or manage this acquisition directly inside the Admin Portal.
+                  </p>`
       : `<div style="display: inline-block; padding: 6px 14px; background-color: #27272a; border: 1px solid #3f3f46; border-radius: 20px; font-family: 'Courier New', monospace; font-size: 11px; letter-spacing: 0.15em; color: #f4f4f5; text-transform: uppercase;">
-                      ACQUISITION CONFIRMED
-                    </div>
-                    <h2 style="font-family: 'Georgia', serif; font-size: 22px; font-weight: 400; color: #ffffff; margin: 16px 0 8px 0;">
-                      Thank you, ${order.customer.firstName}.
-                    </h2>
-                    <p style="font-size: 14px; line-height: 1.6; color: #a1a1aa; margin: 0 0 24px 0;">
-                      Your atelier garments are now being prepared in our workshop. Each piece undergoes hand inspection before being packaged in archival satin ribbon boxing.
-                    </p>`
+                    ACQUISITION CONFIRMED
+                  </div>
+                  <h2 style="font-family: 'Georgia', serif; font-size: 22px; font-weight: 400; color: #ffffff; margin: 16px 0 8px 0;">
+                    Thank you, ${order.customer.firstName}.
+                  </h2>
+                  <p style="font-size: 14px; line-height: 1.6; color: #a1a1aa; margin: 0 0 24px 0;">
+                    Your atelier garments are now being prepared in our workshop. Each piece undergoes hand inspection before being packaged in archival satin ribbon boxing.
+                  </p>`
     }
 
               <!-- Order Summary Meta Box -->
@@ -129,9 +129,9 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
                 </tr>
                 ${order.discount > 0
       ? `<tr>
-                        <td style="color: #d4d4d8;">VIP Privilege (${order.discountCode || 'PROMO'})</td>
-                        <td align="right" style="font-family: 'Courier New', monospace; color: #d4d4d8;">-${order.discount.toLocaleString()} EGP</td>
-                      </tr>`
+                      <td style="color: #d4d4d8;">VIP Privilege (${order.discountCode || 'PROMO'})</td>
+                      <td align="right" style="font-family: 'Courier New', monospace; color: #d4d4d8;">-${order.discount.toLocaleString()} EGP</td>
+                    </tr>`
       : ''
     }
                 <tr>
@@ -171,7 +171,7 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
           <!-- Admin CTA or Customer Status link -->
           <tr>
             <td style="padding: 0 32px 40px 32px; text-align: center;">
-              <a href="${isAdmin ? 'http://localhost:3000/admin?order=' + order.orderNumber : 'http://localhost:3000/track?order=' + order.orderNumber}"
+              <a href="${isAdmin ? 'https://doueproject.com/admin?order=' + order.orderNumber : 'https://doueproject.com/track?order=' + order.orderNumber}"
                  style="display: inline-block; padding: 14px 32px; background-color: #ffffff; color: #09090b; font-family: 'Helvetica Neue', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; text-decoration: none; border-radius: 2px;">
                 ${isAdmin ? 'OPEN IN ADMIN PORTAL' : 'TRACK ATELIER SHIPMENT'}
               </a>
@@ -196,11 +196,10 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
   `;
 }
 
-// Send or record notifications for both admin and customer
+// Send real SMTP notifications for both admin and customer
 export async function dispatchOrderNotifications(order: Order): Promise<{
   adminSuccess: boolean;
   customerSuccess: boolean;
-  adminPreviewUrl?: string;
   error?: string;
 }> {
   const settings = await getAdminSettings();
@@ -213,74 +212,51 @@ export async function dispatchOrderNotifications(order: Order): Promise<{
   const adminHtml = await generateOrderEmailHtml(order, 'admin');
   const customerHtml = await generateOrderEmailHtml(order, 'customer');
 
-  let adminPreviewUrl: string | undefined;
+  // Unified configuration fallback (supports both Env Vars and Database Settings)
+  const host = process.env.SMTP_HOST || settings.smtpHost || 'smtp.gmail.com';
+  const port = Number(process.env.SMTP_PORT || settings.smtpPort || 465);
+  const user = process.env.SMTP_USER || settings.smtpUser || 'doueprojecteg@gmail.com';
+  const pass = process.env.SMTP_PASS || (settings as any).smtpPass;
+  const senderName = settings.senderName || 'DOUE Atelier';
+  const senderEmail = process.env.SMTP_FROM || user;
 
-  // Attempt real SMTP if configured or environment provided
-  const host = process.env.SMTP_HOST || settings.smtpHost;
-  const user = process.env.SMTP_USER || settings.smtpUser;
-  const pass = process.env.SMTP_PASS;
-
-  if (host && user && pass) {
-    try {
-      const transporter = nodemailer.createTransport({
-        host,
-        port: Number(process.env.SMTP_PORT || settings.smtpPort || 587),
-        secure: false,
-        auth: { user, pass }
-      });
-
-      // Send to Admin
-      await transporter.sendMail({
-        from: `"${settings.senderName}" <${process.env.SMTP_FROM || user}>`,
-        to: adminEmail,
-        subject: adminSubject,
-        html: adminHtml
-      });
-
-      // Send to Customer
-      await transporter.sendMail({
-        from: `"${settings.senderName}" <${process.env.SMTP_FROM || user}>`,
-        to: customerEmail,
-        subject: customerSubject,
-        html: customerHtml
-      });
-
-      // Log both
-      await recordEmailNotification({
-        orderId: order.id,
-        orderNumber: order.orderNumber,
-        recipientEmail: adminEmail,
-        type: 'admin_new_order',
-        subject: adminSubject,
-        status: 'sent',
-        contentHtml: adminHtml
-      });
-
-      await recordEmailNotification({
-        orderId: order.id,
-        orderNumber: order.orderNumber,
-        recipientEmail: customerEmail,
-        type: 'customer_confirmation',
-        subject: customerSubject,
-        status: 'sent',
-        contentHtml: customerHtml
-      });
-
-      return { adminSuccess: true, customerSuccess: true };
-    } catch (err: any) {
-      console.warn('Real SMTP delivery failed, falling back to simulated dispatcher:', err.message);
-    }
+  if (!pass) {
+    console.error('SMTP Error: Missing SMTP_PASS / App Password in environment variables or database settings.');
+    return { adminSuccess: false, customerSuccess: false, error: 'Missing SMTP password configuration.' };
   }
 
-  // Fallback: Simulated notification logger
   try {
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465, // true for port 465 (SSL), false for port 587 (TLS)
+      auth: { user, pass }
+    });
+
+    // Send to Admin
+    await transporter.sendMail({
+      from: `"${senderName}" <${senderEmail}>`,
+      to: adminEmail,
+      subject: adminSubject,
+      html: adminHtml
+    });
+
+    // Send to Customer
+    await transporter.sendMail({
+      from: `"${senderName}" <${senderEmail}>`,
+      to: customerEmail,
+      subject: customerSubject,
+      html: customerHtml
+    });
+
+    // Log both as successfully sent via real SMTP
     await recordEmailNotification({
       orderId: order.id,
       orderNumber: order.orderNumber,
       recipientEmail: adminEmail,
       type: 'admin_new_order',
       subject: adminSubject,
-      status: 'simulated',
+      status: 'sent',
       contentHtml: adminHtml
     });
 
@@ -290,17 +266,13 @@ export async function dispatchOrderNotifications(order: Order): Promise<{
       recipientEmail: customerEmail,
       type: 'customer_confirmation',
       subject: customerSubject,
-      status: 'simulated',
+      status: 'sent',
       contentHtml: customerHtml
     });
 
-    return {
-      adminSuccess: true,
-      customerSuccess: true,
-      adminPreviewUrl
-    };
+    return { adminSuccess: true, customerSuccess: true };
   } catch (err: any) {
-    console.error('Failed to dispatch notification:', err);
+    console.error('Real SMTP delivery failed:', err);
     return {
       adminSuccess: false,
       customerSuccess: false,
