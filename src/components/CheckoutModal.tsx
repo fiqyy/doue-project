@@ -338,7 +338,7 @@ export default function CheckoutModal({
 
               <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr 1fr', gap: 12, marginBottom: 12 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>CITY *</label>
+                  <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>AREA *</label>
                   <input
                     type="text"
                     required
@@ -349,7 +349,7 @@ export default function CheckoutModal({
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>STATE</label>
+                  <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>GOVERNATE *</label>
                   <input
                     type="text"
                     value={state}

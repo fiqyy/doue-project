@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { Product, Order, EmailNotification, AdminSettings, AdminStats, OrderStatus } from '@/types';
+import { Product, Order, EmailNotification, AdminSettings, AdminStats, OrderStatus, SizeStock } from '@/types';
 import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_SETTINGS } from './seed-data';
 
 const pool = new Pool({
@@ -146,14 +146,35 @@ export async function saveProduct(productData: Partial<Product> & { name: string
   if (!db.products) db.products = [];
   const existingIdx = db.products.findIndex((p: Product) => p.id === productData.id);
 
+  // Derive sizes and stockCount from sizeStock if provided
+  let resolvedSizes = productData.sizes;
+  let resolvedStockCount = productData.stockCount;
+  if (productData.sizeStock && productData.sizeStock.length > 0) {
+    resolvedSizes = productData.sizeStock.map((s: SizeStock) => s.size);
+    resolvedStockCount = productData.sizeStock.reduce((sum: number, s: SizeStock) => sum + s.stock, 0);
+  }
+
   let updated: Product;
   if (existingIdx >= 0) {
     updated = {
       ...db.products[existingIdx],
-      ...productData
+      ...productData,
+      sizes: resolvedSizes || db.products[existingIdx].sizes,
+      stockCount: resolvedStockCount !== undefined ? resolvedStockCount : db.products[existingIdx].stockCount,
+      inStock: (resolvedStockCount !== undefined ? resolvedStockCount : db.products[existingIdx].stockCount) > 0
     };
     db.products[existingIdx] = updated;
   } else {
+    const defaultSizeStock: SizeStock[] = [
+      { size: '46 / S', stock: 3 },
+      { size: '48 / M', stock: 3 },
+      { size: '50 / L', stock: 3 },
+      { size: '52 / XL', stock: 1 }
+    ];
+    const finalSizeStock = productData.sizeStock && productData.sizeStock.length > 0 ? productData.sizeStock : defaultSizeStock;
+    const finalSizes = finalSizeStock.map((s: SizeStock) => s.size);
+    const finalStock = finalSizeStock.reduce((sum: number, s: SizeStock) => sum + s.stock, 0);
+
     updated = {
       id: productData.id || `doue-${Date.now().toString(36)}`,
       name: productData.name,
@@ -169,9 +190,10 @@ export async function saveProduct(productData: Partial<Product> & { name: string
         ? productData.images
         : ['https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1200&q=85'],
       colors: productData.colors || [{ name: 'Obsidian Black', hex: '#0a0a0a' }],
-      sizes: productData.sizes || ['S', 'M', 'L'],
-      inStock: productData.inStock !== undefined ? productData.inStock : true,
-      stockCount: productData.stockCount !== undefined ? productData.stockCount : 10,
+      sizes: finalSizes,
+      sizeStock: finalSizeStock,
+      inStock: finalStock > 0,
+      stockCount: finalStock,
       featured: productData.featured || false,
       badge: productData.badge || 'NEW ARRIVAL',
       threeDType: productData.threeDType || 'blazer'
@@ -243,7 +265,17 @@ export async function createOrder(orderInput: Omit<Order, 'id' | 'orderNumber' |
   for (const item of newOrder.items) {
     const prod = db.products.find((p: Product) => p.id === item.productId);
     if (prod) {
-      prod.stockCount = Math.max(0, prod.stockCount - item.quantity);
+      // Deduct per-size stock if sizeStock is present
+      if (prod.sizeStock && prod.sizeStock.length > 0) {
+        const sizeEntry = prod.sizeStock.find((s: SizeStock) => s.size === item.size);
+        if (sizeEntry) {
+          sizeEntry.stock = Math.max(0, sizeEntry.stock - item.quantity);
+        }
+        // Recompute total stockCount from sizeStock
+        prod.stockCount = prod.sizeStock.reduce((sum: number, s: SizeStock) => sum + s.stock, 0);
+      } else {
+        prod.stockCount = Math.max(0, prod.stockCount - item.quantity);
+      }
       if (prod.stockCount === 0) {
         prod.inStock = false;
       }

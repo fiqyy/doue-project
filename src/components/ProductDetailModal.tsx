@@ -36,9 +36,15 @@ export default function ProductDetailModal({
     };
   }, [isOpen]);
 
+  // Determine available/default size considering per-size stock
   useEffect(() => {
     if (product) {
-      setSelectedSize(product.sizes[0] || 'M');
+      let defaultSz = product.sizes[0] || 'M';
+      if (product.sizeStock && product.sizeStock.length > 0) {
+        const firstAvailable = product.sizeStock.find((s) => s.stock > 0);
+        defaultSz = firstAvailable ? firstAvailable.size : product.sizeStock[0].size;
+      }
+      setSelectedSize(defaultSz);
       setSelectedColor(product.colors[0]?.name || 'Noir');
       setActiveImageIdx(0);
       setQuantity(1);
@@ -47,10 +53,21 @@ export default function ProductDetailModal({
 
   if (!isOpen || !product) return null;
 
-  const isSoldOut = !product.inStock || product.stockCount <= 0;
+  // Check stock for currently selected size
+  const getSelectedSizeStock = () => {
+    if (product.sizeStock && product.sizeStock.length > 0) {
+      const match = product.sizeStock.find((s) => s.size === selectedSize);
+      return match ? match.stock : product.stockCount;
+    }
+    return product.stockCount;
+  };
+
+  const currentSizeStock = getSelectedSizeStock();
+  const isSelectedSizeSoldOut = currentSizeStock <= 0;
+  const isGlobalSoldOut = !product.inStock || product.stockCount <= 0;
 
   const handleAdd = () => {
-    if (isSoldOut) return;
+    if (isGlobalSoldOut || isSelectedSizeSoldOut) return;
     onAddToCart(product, selectedSize, selectedColor, quantity);
     setAddedNotice(true);
     setTimeout(() => {
@@ -183,8 +200,8 @@ export default function ProductDetailModal({
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--text-primary)' }}>
                 {product.price.toLocaleString()} EGP
               </span>
-              <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-mono)', fontSize: 11, color: isSoldOut ? '#fca5a5' : '#6ee7b7' }}>
-                {isSoldOut ? 'OUT OF STOCK' : 'IN STOCK'}
+              <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-mono)', fontSize: 11, color: isGlobalSoldOut ? '#fca5a5' : '#6ee7b7' }}>
+                {isGlobalSoldOut ? 'OUT OF STOCK' : currentSizeStock <= 2 ? `ONLY ${currentSizeStock} LEFT` : 'IN STOCK'}
               </span>
             </div>
 
@@ -238,7 +255,7 @@ export default function ProductDetailModal({
               </div>
             )}
 
-            {/* Size Selection */}
+            {/* Size Selection with Stock Integration */}
             <div style={{ marginBottom: 24 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 8 }}>
                 <span style={{ color: 'var(--text-muted)' }}>ATELIER SIZING</span>
@@ -247,25 +264,66 @@ export default function ProductDetailModal({
                 </span>
               </div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {product.sizes.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setSelectedSize(s)}
-                    style={{
-                      padding: '8px 16px',
-                      background: selectedSize === s ? 'var(--text-primary)' : 'var(--bg-card)',
-                      color: selectedSize === s ? 'var(--bg-deep)' : 'var(--text-primary)',
-                      border: selectedSize === s ? '1px solid #ffffff' : '1px solid var(--border-medium)',
-                      borderRadius: 2,
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 12,
-                      fontWeight: 500,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {s}
-                  </button>
-                ))}
+                {product.sizeStock && product.sizeStock.length > 0 ? (
+                  product.sizeStock.map((item) => {
+                    const isSizeOutOfStock = item.stock === 0;
+                    const isSelected = selectedSize === item.size;
+
+                    return (
+                      <button
+                        key={item.size}
+                        type="button"
+                        disabled={isSizeOutOfStock}
+                        onClick={() => !isSizeOutOfStock && setSelectedSize(item.size)}
+                        style={{
+                          padding: '8px 16px',
+                          background: isSizeOutOfStock
+                            ? 'rgba(255, 255, 255, 0.01)'
+                            : isSelected
+                            ? 'var(--text-primary)'
+                            : 'var(--bg-card)',
+                          color: isSizeOutOfStock
+                            ? 'rgba(255, 255, 255, 0.2)'
+                            : isSelected
+                            ? 'var(--bg-deep)'
+                            : 'var(--text-primary)',
+                          border: '1px solid',
+                          borderColor: isSizeOutOfStock ? 'rgba(255, 255, 255, 0.06)' : isSelected ? '#ffffff' : 'var(--border-medium)',
+                          borderRadius: 2,
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: 12,
+                          fontWeight: 500,
+                          cursor: isSizeOutOfStock ? 'not-allowed' : 'pointer',
+                          textDecoration: isSizeOutOfStock ? 'line-through' : 'none',
+                          opacity: isSizeOutOfStock ? 0.4 : 1
+                        }}
+                        title={isSizeOutOfStock ? `${item.size} is Sold Out` : `${item.size} (${item.stock} left)`}
+                      >
+                        {item.size}
+                      </button>
+                    );
+                  })
+                ) : (
+                  product.sizes.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setSelectedSize(s)}
+                      style={{
+                        padding: '8px 16px',
+                        background: selectedSize === s ? 'var(--text-primary)' : 'var(--bg-card)',
+                        color: selectedSize === s ? 'var(--bg-deep)' : 'var(--text-primary)',
+                        border: selectedSize === s ? '1px solid #ffffff' : '1px solid var(--border-medium)',
+                        borderRadius: 2,
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 12,
+                        fontWeight: 500,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {s}
+                    </button>
+                  ))
+                )}
               </div>
             </div>
 
@@ -282,7 +340,7 @@ export default function ProductDetailModal({
                   {quantity}
                 </span>
                 <button
-                  onClick={() => setQuantity((q) => Math.min(product.stockCount || 10, q + 1))}
+                  onClick={() => setQuantity((q) => Math.min(currentSizeStock || 10, q + 1))}
                   style={{ padding: '12px 14px', color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}
                 >
                   <Plus size={14} />
@@ -291,7 +349,7 @@ export default function ProductDetailModal({
 
               <button
                 type="button"
-                disabled={isSoldOut}
+                disabled={isGlobalSoldOut || isSelectedSizeSoldOut}
                 onClick={handleAdd}
                 className="btn-luxury"
                 style={{
@@ -300,18 +358,20 @@ export default function ProductDetailModal({
                   padding: '14px 16px',
                   fontSize: 11,
                   boxSizing: 'border-box',
-                  opacity: isSoldOut ? 0.4 : 1,
-                  cursor: isSoldOut ? 'not-allowed' : 'pointer',
-                  background: isSoldOut ? 'var(--bg-card)' : undefined,
-                  color: isSoldOut ? 'var(--text-muted)' : undefined,
+                  opacity: (isGlobalSoldOut || isSelectedSizeSoldOut) ? 0.4 : 1,
+                  cursor: (isGlobalSoldOut || isSelectedSizeSoldOut) ? 'not-allowed' : 'pointer',
+                  background: (isGlobalSoldOut || isSelectedSizeSoldOut) ? 'var(--bg-card)' : undefined,
+                  color: (isGlobalSoldOut || isSelectedSizeSoldOut) ? 'var(--text-muted)' : undefined,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: 8
                 }}
               >
-                {isSoldOut ? (
+                {isGlobalSoldOut ? (
                   <span>SOLD OUT</span>
+                ) : isSelectedSizeSoldOut ? (
+                  <span>SIZE SOLD OUT</span>
                 ) : addedNotice ? (
                   <>
                     <Check size={16} />

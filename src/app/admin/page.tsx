@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -36,7 +36,7 @@ import {
   Calendar,
   Sparkles
 } from 'lucide-react';
-import { Order, Product, AdminStats, EmailNotification, AdminSettings, OrderStatus } from '@/types';
+import { Order, Product, AdminStats, EmailNotification, AdminSettings, OrderStatus, SizeStock } from '@/types';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 import OrderCardMobile from '@/components/admin/OrderCardMobile';
 import AdminBottomNav from '@/components/admin/AdminBottomNav';
@@ -94,6 +94,16 @@ export default function AdminPortal() {
   const [newColorNameInput, setNewColorNameInput] = useState('');
   const [newColorHexInput, setNewColorHexInput] = useState('#8b5cf6');
 
+  // Add Product Size/Stock States
+  const [productSizeStockList, setProductSizeStockList] = useState<SizeStock[]>([
+    { size: '46 / S', stock: 3 },
+    { size: '48 / M', stock: 3 },
+    { size: '50 / L', stock: 3 },
+    { size: '52 / XL', stock: 1 }
+  ]);
+  const [newSizeInput, setNewSizeInput] = useState('');
+  const [newSizeStockInput, setNewSizeStockInput] = useState(5);
+
   // Edit Product Modal States
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editProductName, setEditProductName] = useState('');
@@ -108,6 +118,11 @@ export default function AdminPortal() {
   const [editProductColorsList, setEditProductColorsList] = useState<CustomColorOption[]>([]);
   const [editColorNameInput, setEditColorNameInput] = useState('');
   const [editColorHexInput, setEditColorHexInput] = useState('#8b5cf6');
+
+  // Edit Product Size/Stock States
+  const [editSizeStockList, setEditSizeStockList] = useState<SizeStock[]>([]);
+  const [editNewSizeInput, setEditNewSizeInput] = useState('');
+  const [editNewSizeStockInput, setEditNewSizeStockInput] = useState(5);
 
   // Settings form
   const [adminEmailInput, setAdminEmailInput] = useState('');
@@ -287,6 +302,15 @@ export default function AdminPortal() {
     setEditProductStock(prod.stockCount || 10);
     setEditProductImagesList(prod.images || []);
     setEditProductColorsList(prod.colors || []);
+    if (prod.sizeStock && prod.sizeStock.length > 0) {
+      setEditSizeStockList(prod.sizeStock);
+    } else {
+      const sizes = prod.sizes && prod.sizes.length > 0 ? prod.sizes : ['46 / S', '48 / M', '50 / L', '52 / XL'];
+      const perSize = sizes.length > 0 ? Math.max(1, Math.round((prod.stockCount || 10) / sizes.length)) : 5;
+      setEditSizeStockList(sizes.map((s) => ({ size: s, stock: perSize })));
+    }
+    setEditNewSizeInput('');
+    setEditNewSizeStockInput(5);
   };
 
   const handleUpdateProduct = async (e: React.FormEvent) => {
@@ -298,6 +322,7 @@ export default function AdminPortal() {
     }
 
     try {
+      const totalStock = editSizeStockList.reduce((sum, s) => sum + s.stock, 0);
       const res = await fetch(`/api/products/${editingProduct.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -309,10 +334,11 @@ export default function AdminPortal() {
           description: editProductDescription,
           materials: editProductMaterials,
           images: editProductImagesList,
-          sizes: editingProduct.sizes || ['46 / S', '48 / M', '50 / L', '52 / XL'],
+          sizes: editSizeStockList.map((s) => s.size),
+          sizeStock: editSizeStockList,
           colors: editProductColorsList,
-          stockCount: Number(editProductStock),
-          inStock: Number(editProductStock) > 0
+          stockCount: totalStock,
+          inStock: totalStock > 0
         })
       });
       const data = await res.json();
@@ -415,6 +441,7 @@ export default function AdminPortal() {
       return;
     }
     try {
+      const totalStock = productSizeStockList.reduce((sum, s) => sum + s.stock, 0);
       const res = await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -426,11 +453,11 @@ export default function AdminPortal() {
           description: newProductDescription,
           materials: newProductMaterials,
           images: productImagesList,
-          sizes: ['46 / S', '48 / M', '50 / L', '52 / XL'],
+          sizes: productSizeStockList.map((s) => s.size),
+          sizeStock: productSizeStockList,
           colors: productColorsList,
-          stockCount: Number(newProductStock),
-          inStock: Number(newProductStock) > 0,
-          badge: 'NEW ATELIER RELEASE'
+          stockCount: totalStock,
+          inStock: totalStock > 0
         })
       });
       const data = await res.json();
@@ -444,6 +471,13 @@ export default function AdminPortal() {
           { name: 'Obsidian Black', hex: '#0a0a0a' },
           { name: 'Rich Cognac Brown', hex: '#5c4033' }
         ]);
+        setProductSizeStockList([
+          { size: '46 / S', stock: 3 },
+          { size: '48 / M', stock: 3 },
+          { size: '50 / L', stock: 3 },
+          { size: '52 / XL', stock: 1 }
+        ]);
+        setNewSizeInput('');
         fetchData();
       }
     } catch (err) {
@@ -1250,9 +1284,38 @@ export default function AdminPortal() {
                     <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 4 }}>
                       {prod.name}
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 12 }}>
+                    <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 8 }}>
                       {prod.subtitle}
                     </div>
+
+                    {/* Per-size stock breakdown */}
+                    {prod.sizeStock && prod.sizeStock.length > 0 ? (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 10 }}>
+                        {prod.sizeStock.map((ss, i) => (
+                          <span key={i} style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 4,
+                            padding: '2px 7px', borderRadius: 3,
+                            background: ss.stock === 0 ? 'rgba(239,68,68,0.1)' : ss.stock <= 2 ? 'rgba(234,179,8,0.1)' : 'rgba(16,185,129,0.1)',
+                            border: `1px solid ${ss.stock === 0 ? 'rgba(239,68,68,0.3)' : ss.stock <= 2 ? 'rgba(234,179,8,0.3)' : 'rgba(16,185,129,0.3)'}`,
+                            fontSize: 10,
+                            fontFamily: "var(--font-mono)",
+                            color: ss.stock === 0 ? '#fca5a5' : ss.stock <= 2 ? '#fde047' : '#6ee7b7'
+                          }}>
+                            <span>{ss.size}</span>
+                            <span style={{ opacity: 0.7 }}>·</span>
+                            <span>{ss.stock}</span>
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 10 }}>
+                        {(prod.sizes || []).map((sz, i) => (
+                          <span key={i} style={{ padding: '2px 7px', borderRadius: 3, background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-subtle)', fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
+                            {sz}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: 12, borderTop: '1px solid var(--border-subtle)' }}>
                       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 15, fontWeight: 700 }}>
@@ -1825,6 +1888,77 @@ export default function AdminPortal() {
                 )}
               </div>
 
+              {/* Size & Stock Management */}
+              <div style={{ marginBottom: 18, padding: 14, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-medium)', borderRadius: 6 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: '#fff', marginBottom: 10 }}>
+                  <Package size={14} />
+                  <span>SIZE VARIANTS & STOCK</span>
+                  <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--text-muted)' }}>
+                    Total: {productSizeStockList.reduce((s, x) => s + x.stock, 0)} units
+                  </span>
+                </label>
+
+                {/* Existing size rows */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
+                  {productSizeStockList.map((ss, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#121216', border: '1px solid var(--border-subtle)', borderRadius: 4, padding: '6px 10px' }}>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#fff', minWidth: 70 }}>{ss.size}</span>
+                      <input
+                        type="number"
+                        min="0"
+                        value={ss.stock}
+                        onChange={(e) => {
+                          const updated = [...productSizeStockList];
+                          updated[idx] = { ...updated[idx], stock: Math.max(0, Number(e.target.value)) };
+                          setProductSizeStockList(updated);
+                        }}
+                        style={{ width: 70, padding: '4px 8px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid var(--border-medium)', borderRadius: 4, fontFamily: 'var(--font-mono)', fontSize: 13, textAlign: 'center' }}
+                      />
+                      <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>units</span>
+                      <button
+                        type="button"
+                        onClick={() => setProductSizeStockList(productSizeStockList.filter((_, i) => i !== idx))}
+                        style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#fca5a5', cursor: 'pointer', fontSize: 15, lineHeight: 1 }}
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Add new size */}
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    placeholder="Size (e.g. 48 / M)"
+                    value={newSizeInput}
+                    onChange={(e) => setNewSizeInput(e.target.value)}
+                    style={{ flexGrow: 1, padding: '8px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)', fontSize: 13, borderRadius: 4 }}
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Stock"
+                    value={newSizeStockInput}
+                    onChange={(e) => setNewSizeStockInput(Math.max(0, Number(e.target.value)))}
+                    style={{ width: 70, padding: '8px 10px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)', fontFamily: 'var(--font-mono)', fontSize: 13, borderRadius: 4, textAlign: 'center' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!newSizeInput.trim()) return;
+                      setProductSizeStockList((prev) => [...prev, { size: newSizeInput.trim(), stock: newSizeStockInput }]);
+                      setNewSizeInput('');
+                      setNewSizeStockInput(5);
+                    }}
+                    className="btn-luxury-outline touch-target"
+                    style={{ padding: '7px 14px', fontSize: 11, borderRadius: 4 }}
+                  >
+                    ADD
+                  </button>
+                </div>
+              </div>
+
               {/* Color System */}
               <div style={{ marginBottom: 18, padding: 14, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-medium)', borderRadius: 6 }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: '#fff', marginBottom: 8 }}>
@@ -2026,6 +2160,36 @@ export default function AdminPortal() {
                     ))}
                   </div>
                 )}
+              </div>
+
+              {/* Edit Size & Stock */}
+              <div style={{ marginBottom: 18, padding: 14, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-medium)', borderRadius: 6 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, fontFamily: 'var(--font-mono)', color: '#fff', marginBottom: 10 }}>
+                  <Package size={14} />
+                  <span>SIZE VARIANTS &amp; STOCK</span>
+                  <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--text-muted)' }}>
+                    Total: {editSizeStockList.reduce((s, x) => s + x.stock, 0)} units
+                  </span>
+                </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
+                  {editSizeStockList.map((ss, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#121216', border: '1px solid var(--border-subtle)', borderRadius: 4, padding: '6px 10px' }}>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#fff', minWidth: 70 }}>{ss.size}</span>
+                      <input
+                        type="number" min="0" value={ss.stock}
+                        onChange={(e) => { const updated = [...editSizeStockList]; updated[idx] = { ...updated[idx], stock: Math.max(0, Number(e.target.value)) }; setEditSizeStockList(updated); }}
+                        style={{ width: 70, padding: '4px 8px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid var(--border-medium)', borderRadius: 4, fontFamily: 'var(--font-mono)', fontSize: 13, textAlign: 'center' }}
+                      />
+                      <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>units</span>
+                      <button type="button" onClick={() => setEditSizeStockList(editSizeStockList.filter((_, i) => i !== idx))} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#fca5a5', cursor: 'pointer', fontSize: 15 }}>&times;</button>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <input type="text" placeholder="New size label" value={editNewSizeInput} onChange={(e) => setEditNewSizeInput(e.target.value)} style={{ flexGrow: 1, padding: '8px 12px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)', fontSize: 13, borderRadius: 4 }} />
+                  <input type="number" min="0" value={editNewSizeStockInput} onChange={(e) => setEditNewSizeStockInput(Math.max(0, Number(e.target.value)))} style={{ width: 70, padding: '8px 10px', background: '#121216', color: '#fff', border: '1px solid var(--border-medium)', fontFamily: 'var(--font-mono)', fontSize: 13, borderRadius: 4, textAlign: 'center' }} />
+                  <button type="button" onClick={() => { if (!editNewSizeInput.trim()) return; setEditSizeStockList((prev) => [...prev, { size: editNewSizeInput.trim(), stock: editNewSizeStockInput }]); setEditNewSizeInput(''); setEditNewSizeStockInput(5); }} className="btn-luxury-outline touch-target" style={{ padding: '7px 14px', fontSize: 11, borderRadius: 4 }}>ADD</button>
+                </div>
               </div>
 
               {/* Edit Colors */}

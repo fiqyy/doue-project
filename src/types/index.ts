@@ -1,3 +1,8 @@
+export type SizeStock = {
+  size: string;
+  stock: number;
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -12,6 +17,7 @@ export type Product = {
   images: string[];
   colors: { name: string; hex: string }[];
   sizes: string[];
+  sizeStock?: SizeStock[]; // Per-size stock breakdown
   inStock: boolean;
   stockCount: number;
   featured?: boolean;

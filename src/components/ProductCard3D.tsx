@@ -22,7 +22,17 @@ export default function ProductCard({
 }: ProductCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [hoverSecondImage, setHoverSecondImage] = useState(false);
-  const [selectedSize, setSelectedSize] = useState<string>(product.sizes[0] || 'M');
+
+  // Determine available/default size considering per-size stock
+  const getDefaultSize = () => {
+    if (product.sizeStock && product.sizeStock.length > 0) {
+      const firstAvailable = product.sizeStock.find((s) => s.stock > 0);
+      return firstAvailable ? firstAvailable.size : product.sizeStock[0].size;
+    }
+    return product.sizes[0] || 'M';
+  };
+
+  const [selectedSize, setSelectedSize] = useState<string>(getDefaultSize());
   const [addedNotice, setAddedNotice] = useState(false);
 
   const handleMouseLeave = () => {
@@ -32,6 +42,13 @@ export default function ProductCard({
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!product.inStock || product.stockCount <= 0) return;
+    
+    // Ensure selected size isn't 0 stock
+    if (product.sizeStock) {
+      const sizeObj = product.sizeStock.find((s) => s.size === selectedSize);
+      if (sizeObj && sizeObj.stock <= 0) return;
+    }
+
     onAddToCart(product, selectedSize, product.colors[0]?.name || 'Noir');
     setAddedNotice(true);
     setTimeout(() => setAddedNotice(false), 1600);
@@ -53,12 +70,6 @@ export default function ProductCard({
     >
       {/* Product Image Section */}
       <div className="product-image-container">
-        {/* {product.badge && (
-          <div className="product-badge">
-            {product.badge}
-          </div>
-        )} */}
-
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -95,25 +106,66 @@ export default function ProductCard({
 
         {/* Quick Size Selection & Add to Cart on Hover */}
         <div className="product-quick-actions" onClick={(e) => e.stopPropagation()}>
-          <div style={{ display: 'flex', gap: 6, flexGrow: 1, overflowX: 'auto' }}>
-            {product.sizes.map((s) => (
-              <button
-                key={s}
-                onClick={() => setSelectedSize(s)}
-                style={{
-                  padding: '6px 10px',
-                  background: selectedSize === s ? 'var(--text-primary)' : 'rgba(24, 24, 28, 0.85)',
-                  color: selectedSize === s ? 'var(--bg-deep)' : 'var(--text-primary)',
-                  border: '1px solid var(--border-medium)',
-                  borderRadius: 2,
-                  fontSize: 11,
-                  fontFamily: 'var(--font-mono)',
-                  cursor: 'pointer'
-                }}
-              >
-                {s.split('/')[0].trim()}
-              </button>
-            ))}
+          <div style={{ display: 'flex', gap: 6, flexGrow: 1, overflowX: 'auto', alignItems: 'center' }}>
+            {product.sizeStock && product.sizeStock.length > 0 ? (
+              product.sizeStock.map((item) => {
+                const isSizeOutOfStock = item.stock === 0;
+                const isSelected = selectedSize === item.size;
+
+                return (
+                  <button
+                    key={item.size}
+                    type="button"
+                    disabled={isSizeOutOfStock}
+                    onClick={() => !isSizeOutOfStock && setSelectedSize(item.size)}
+                    style={{
+                      padding: '6px 10px',
+                      background: isSizeOutOfStock
+                        ? 'rgba(255, 255, 255, 0.01)'
+                        : isSelected
+                        ? 'var(--text-primary)'
+                        : 'rgba(24, 24, 28, 0.85)',
+                      color: isSizeOutOfStock
+                        ? 'rgba(255, 255, 255, 0.2)'
+                        : isSelected
+                        ? 'var(--bg-deep)'
+                        : 'var(--text-primary)',
+                      border: '1px solid',
+                      borderColor: isSizeOutOfStock ? 'rgba(255, 255, 255, 0.06)' : 'var(--border-medium)',
+                      borderRadius: 2,
+                      fontSize: 11,
+                      fontFamily: 'var(--font-mono)',
+                      cursor: isSizeOutOfStock ? 'not-allowed' : 'pointer',
+                      textDecoration: isSizeOutOfStock ? 'line-through' : 'none',
+                      opacity: isSizeOutOfStock ? 0.4 : 1,
+                      whiteSpace: 'nowrap'
+                    }}
+                    title={isSizeOutOfStock ? `${item.size} is Sold Out` : `${item.size} (${item.stock} left)`}
+                  >
+                    {item.size.split('/')[0].trim()}
+                  </button>
+                );
+              })
+            ) : (
+              product.sizes.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSelectedSize(s)}
+                  style={{
+                    padding: '6px 10px',
+                    background: selectedSize === s ? 'var(--text-primary)' : 'rgba(24, 24, 28, 0.85)',
+                    color: selectedSize === s ? 'var(--bg-deep)' : 'var(--text-primary)',
+                    border: '1px solid var(--border-medium)',
+                    borderRadius: 2,
+                    fontSize: 11,
+                    fontFamily: 'var(--font-mono)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {s.split('/')[0].trim()}
+                </button>
+              ))
+            )}
           </div>
 
           <button
