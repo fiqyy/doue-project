@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getOrderById, updateOrderStatus } from '@/lib/db';
+import { getOrderById, updateOrderStatus, deleteOrder } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
@@ -37,6 +37,24 @@ export async function PATCH(
       success: true,
       order: updated,
       message: `Order ${updated.orderNumber} status updated to ${status}`
+    });
+  } catch (err: any) {
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const success = await deleteOrder(params.id);
+    if (!success) {
+      return NextResponse.json({ success: false, error: 'Order not found' }, { status: 404 });
+    }
+    return NextResponse.json({
+      success: true,
+      message: `Order successfully deleted from atelier registry`
     });
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

@@ -84,17 +84,36 @@ export type EmailNotification = {
   contentHtml?: string;
 };
 
+export type DailyStat = {
+  date: string;
+  dayLabel: string;
+  shortDate: string;
+  revenue: number;
+  orders: number;
+  aov: number;
+};
+
 export type AdminStats = {
   totalRevenue: number;
+  thisMonthRevenue: number;
   totalOrders: number;
+  thisMonthOrders: number;
   averageOrderValue: number;
+  thisMonthAOV: number;
+  thisMonthAvgOrdersPerDay: number;
   pendingOrders: number;
   processingOrders: number;
   shippedOrders: number;
   deliveredOrders: number;
+  cancelledOrders: number;
   totalProducts: number;
   lowStockCount: number;
   recentOrders: Order[];
+  dailyChartData: DailyStat[];
+  growth: {
+    revenueGrowthMoM: number;
+    ordersGrowthMoM: number;
+  };
 };
 
 export type AdminSettings = {
