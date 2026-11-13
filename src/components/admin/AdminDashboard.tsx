@@ -145,15 +145,27 @@ export default function AdminDashboard({
         }}>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-              <span style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                letterSpacing: '0.12em',
-                color: 'var(--text-muted)',
-                textTransform: 'uppercase'
-              }}>
-                REVENUE THIS MONTH
-              </span>
+              <div>
+                <span style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 11,
+                  letterSpacing: '0.12em',
+                  color: 'var(--text-muted)',
+                  textTransform: 'uppercase',
+                  display: 'block'
+                }}>
+                  REVENUE THIS MONTH
+                </span>
+                <span style={{
+                  fontSize: 10,
+                  color: '#6ee7b7',
+                  fontFamily: 'var(--font-mono)',
+                  display: 'inline-block',
+                  marginTop: 2
+                }}>
+                  (Shipped & Delivered Only)
+                </span>
+              </div>
               <div style={{
                 width: 32,
                 height: 32,
@@ -202,7 +214,7 @@ export default function AdminDashboard({
               {Math.abs(stats.growth.revenueGrowthMoM)}% vs last month
             </span>
             <span style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-              All-Time: {stats.totalRevenue.toLocaleString()} {currency}
+              Fulfilled All-Time: {stats.totalRevenue.toLocaleString()} {currency}
             </span>
           </div>
         </div>

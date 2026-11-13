@@ -235,6 +235,7 @@ export async function createOrder(orderInput: Omit<Order, 'id' | 'orderNumber' |
     ...orderInput,
     id,
     orderNumber,
+    status: 'pending', // Orders automatically start as 'pending' upon creation
     createdAt: new Date().toISOString()
   };
 
@@ -335,18 +336,17 @@ export async function getAdminStats(): Promise<AdminStats> {
   const currentMonth = now.getMonth();
   const currentDay = now.getDate();
 
-  // Active / valid orders (exclude cancelled for revenue metrics)
-  const validOrders = orders.filter((o: Order) => o.status !== 'cancelled');
+  // Fulfilled orders: strictly orders with status "shipped" or "delivered" for revenue and fulfilled metrics
+  const fulfilledOrders = orders.filter((o: Order) => o.status === 'shipped' || o.status === 'delivered');
 
-  const totalRevenue = validOrders.reduce((sum: number, o: Order) => sum + (Number(o.total) || 0), 0);
+  const totalRevenue = fulfilledOrders.reduce((sum: number, o: Order) => sum + (Number(o.total) || 0), 0);
   const totalOrders = orders.length;
-  const averageOrderValue = validOrders.length > 0 ? totalRevenue / validOrders.length : 0;
+  const averageOrderValue = fulfilledOrders.length > 0 ? totalRevenue / fulfilledOrders.length : 0;
 
   // This month fulfilled orders: strictly orders with status "shipped" or "delivered" as requested
-  const thisMonthOrdersList = validOrders.filter((o: Order) => {
-    const isShippedOrDelivered = o.status === 'shipped' || o.status === 'delivered';
+  const thisMonthOrdersList = fulfilledOrders.filter((o: Order) => {
     const d = new Date(o.createdAt);
-    return isShippedOrDelivered && !isNaN(d.getTime()) && d.getFullYear() === currentYear && d.getMonth() === currentMonth;
+    return !isNaN(d.getTime()) && d.getFullYear() === currentYear && d.getMonth() === currentMonth;
   });
 
   const thisMonthRevenue = thisMonthOrdersList.reduce((sum: number, o: Order) => sum + (Number(o.total) || 0), 0);
@@ -359,10 +359,9 @@ export async function getAdminStats(): Promise<AdminStats> {
   const lastMonthYear = lastMonthDate.getFullYear();
   const lastMonth = lastMonthDate.getMonth();
 
-  const lastMonthOrdersList = validOrders.filter((o: Order) => {
-    const isShippedOrDelivered = o.status === 'shipped' || o.status === 'delivered';
+  const lastMonthOrdersList = fulfilledOrders.filter((o: Order) => {
     const d = new Date(o.createdAt);
-    return isShippedOrDelivered && !isNaN(d.getTime()) && d.getFullYear() === lastMonthYear && d.getMonth() === lastMonth;
+    return !isNaN(d.getTime()) && d.getFullYear() === lastMonthYear && d.getMonth() === lastMonth;
   });
 
   const lastMonthRevenue = lastMonthOrdersList.reduce((sum: number, o: Order) => sum + (Number(o.total) || 0), 0);
@@ -386,7 +385,7 @@ export async function getAdminStats(): Promise<AdminStats> {
     dailyMap.set(key, { revenue: 0, orders: 0 });
   }
 
-  validOrders.forEach((o) => {
+  fulfilledOrders.forEach((o) => {
     const key = new Date(o.createdAt).toISOString().split('T')[0];
     if (dailyMap.has(key)) {
       const entry = dailyMap.get(key)!;

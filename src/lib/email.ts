@@ -183,7 +183,6 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
             <td style="padding: 24px 32px; border-top: 1px solid #27272a; text-align: center; background-color: #0e0e10;">
               <div style="font-size: 11px; color: #52525b; line-height: 1.6;">
                 ${settings.storeName} &copy; 2026. All rights reserved.<br>
-                Milan &bull; Paris &bull; Tokyo &bull; New York
               </div>
             </td>
           </tr>

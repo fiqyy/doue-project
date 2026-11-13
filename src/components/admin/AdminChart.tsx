@@ -124,14 +124,14 @@ export default function AdminChart({ data = [], currency = 'EGP' }: AdminChartPr
               <>
                 <span>{totalRevenue.toLocaleString()} {currency}</span>
                 <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-sans)', fontWeight: 400 }}>
-                  ({range === '7d' ? 'Past 7 Days' : 'This Month / 14 Days'})
+                  (Fulfilled &bull; {range === '7d' ? 'Past 7 Days' : '14 Days / This Month'})
                 </span>
               </>
             ) : (
               <>
                 <span>{totalOrders} Orders</span>
                 <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-sans)', fontWeight: 400 }}>
-                  ({range === '7d' ? 'Past 7 Days' : 'This Month / 14 Days'})
+                  (Fulfilled &bull; {range === '7d' ? 'Past 7 Days' : '14 Days / This Month'})
                 </span>
               </>
             )}

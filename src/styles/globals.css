@@ -716,38 +716,14 @@ select:focus {
    MOBILE-FIRST ADMIN PORTAL & DASHBOARD ENHANCEMENTS
    ================================================================ */
 
-/* Real-Time Live Pulse Indicator */
+/* Real-Time Live Dot (Static Green Dot) */
 .live-pulse-dot {
   width: 8px;
   height: 8px;
   background-color: #10b981;
   border-radius: 50%;
   display: inline-block;
-  position: relative;
-  box-shadow: 0 0 10px #10b981;
-}
-
-.live-pulse-dot::after {
-  content: '';
-  position: absolute;
-  top: -4px;
-  left: -4px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 2px solid #10b981;
-  animation: livePing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-@keyframes livePing {
-  0% {
-    transform: scale(0.6);
-    opacity: 1;
-  }
-  80%, 100% {
-    transform: scale(2.2);
-    opacity: 0;
-  }
+  flex-shrink: 0;
 }
 
 /* Mobile Bottom Navigation Bar */
