@@ -677,7 +677,7 @@ export default function AdminPortal() {
                 color: '#fff',
                 whiteSpace: 'nowrap'
               }}>
-                DOUE &bull; ADMIN
+                DOUÈ &bull; ADMIN
               </h1>
               <span className="live-pulse-dot" style={{ width: 6, height: 6 }} />
             </div>

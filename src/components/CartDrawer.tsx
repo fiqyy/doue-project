@@ -62,7 +62,7 @@ export default function CartDrawer({
         <div className="drawer-header">
           <div>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 16, letterSpacing: '0.15em' }}>
-              DOUE CART ({items.reduce((c, i) => c + i.quantity, 0)})
+              DOUÈ CART ({items.reduce((c, i) => c + i.quantity, 0)})
             </h2>
           </div>
           <button onClick={onClose} className="btn-icon" style={{ width: 36, height: 36 }}>
@@ -99,7 +99,7 @@ export default function CartDrawer({
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--text-secondary)', marginBottom: 8 }}>
                 YOUR BAG IS EMPTY
               </div>
-              <p style={{ fontSize: 13, marginBottom: 24 }}>Explore the Volume I, DOUE collection to acquire iconic pieces.</p>
+              <p style={{ fontSize: 13, marginBottom: 24 }}>Explore the Volume I, DOUÈ collection to acquire iconic pieces.</p>
               <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <a href="#collection" className="btn-luxury">
                   <span>EXPLORE COLLECTION</span>

@@ -307,7 +307,7 @@ export default function HomePage() {
           </div>
 
           <h1 className="hero-title">
-            DOUE PROJECT
+            DOUÈ PROJECT
           </h1>
 
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -440,7 +440,7 @@ export default function HomePage() {
         <div className="container" style={{ textAlign: 'center', maxWidth: 580 }}>
           <Sparkles size={24} color="#ffffff" style={{ margin: '0 auto 16px auto' }} />
           <h2 style={{ fontSize: 24, letterSpacing: '0.12em', marginBottom: 12 }}>
-            JOIN THE DOUE INNER CIRCLE
+            JOIN THE DOUÈ INNER CIRCLE
           </h2>
           <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 28 }}>
             Receive updates, new arrivals, and exclusive access.
@@ -480,7 +480,7 @@ export default function HomePage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 40, marginBottom: 50 }}>
             <div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, letterSpacing: '0.2em', fontWeight: 600, color: '#fff' }}>
-                DOUE PROJECT
+                DOUÈ PROJECT
               </div>
             </div>
 
@@ -515,7 +515,7 @@ export default function HomePage() {
               style={{ cursor: 'pointer', transition: 'color 0.2s' }}
               title="Atelier Director Key"
             >
-              &copy; 2026 DOUE NOIR ATELIER. ALL RIGHTS RESERVED.
+              &copy; 2026 DOUÈ NOIR ATELIER. ALL RIGHTS RESERVED.
             </div>
           </div>
         </div>

@@ -39,20 +39,20 @@ async function ensureTablesExist() {
           {
             id: 'em-001',
             orderId: 'ord-84920',
-            orderNumber: 'DOUE-84920',
+            orderNumber: 'DOUÈ-84920',
             recipientEmail: INITIAL_SETTINGS.adminEmail,
             type: 'admin_new_order',
-            subject: '[DOUE ATELIER] High-Value Order Alert #DOUE-84920 ($2,717.37)',
+            subject: '[DOUÈ ATELIER] High-Value Order Alert #DOUÈ-84920 ($2,717.37)',
             sentAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
             status: 'simulated'
           },
           {
             id: 'em-002',
             orderId: 'ord-84920',
-            orderNumber: 'DOUE-84920',
+            orderNumber: 'DOUÈ-84920',
             recipientEmail: INITIAL_SETTINGS.adminEmail,
             type: 'customer_confirmation',
-            subject: 'DOUE NOIR — Acquisition Confirmed #DOUE-84920',
+            subject: 'DOUÈ NOIR — Acquisition Confirmed #DOUÈ-84920',
             sentAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
             status: 'simulated'
           }
@@ -228,7 +228,7 @@ export async function getOrderById(idOrNumber: string): Promise<Order | null> {
 export async function createOrder(orderInput: Omit<Order, 'id' | 'orderNumber' | 'createdAt'>): Promise<Order> {
   const db = await getDbData();
   const randomSuffix = Math.floor(10000 + Math.random() * 90000);
-  const orderNumber = `DOUE-${randomSuffix}`;
+  const orderNumber = `DOUÈ-${randomSuffix}`;
   const id = `ord-${Date.now()}`;
 
   const newOrder: Order = {

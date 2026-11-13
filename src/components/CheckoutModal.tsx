@@ -152,7 +152,7 @@ export default function CheckoutModal({
         <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.25em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-              DOUE's ATELIER CHECKOUT
+              DOUÈ's ATELIER CHECKOUT
             </span>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 18, letterSpacing: '0.12em', marginTop: 2 }}>
               {step === 'confirmed' ? 'ACQUISITION CONFIRMED' : 'COMPLETE YOUR ACQUISITION'}
@@ -522,7 +522,7 @@ export default function CheckoutModal({
                     }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                         <span style={{ fontFamily: 'var(--font-display)', fontSize: 12, letterSpacing: '0.2em', color: '#fff' }}>
-                          DOUE NOIR PRIVILÈGE
+                          DOUÈ NOIR PRIVILÈGE
                         </span>
                         <Sparkles size={14} color="#d4d4d8" />
                       </div>

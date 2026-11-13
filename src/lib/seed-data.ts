@@ -399,8 +399,8 @@ export const INITIAL_ORDERS: Order[] = [
 
 export const INITIAL_SETTINGS: AdminSettings = {
   adminEmail: 'fiqyyyy@gmail.com',
-  storeName: 'DOUE Egypt',
+  storeName: 'DOUÈ Egypt',
   currency: 'EGP',
   smtpConfigured: true,
-  senderName: 'DOUE Egypt Atelier'
+  senderName: 'DOUÈ Egypt'
 };

@@ -207,8 +207,8 @@ export async function dispatchOrderNotifications(order: Order): Promise<{
   const adminEmail = settings.adminEmail || 'fiqyyyy@gmail.com';
   const customerEmail = order.customer.email;
 
-  const adminSubject = `[DOUE PROJECT] Order Alert: ${order.orderNumber} ($${order.total.toLocaleString()})`;
-  const customerSubject = `DOUE PROJECT — Acquisition Confirmed #${order.orderNumber}`;
+  const adminSubject = `[DOUÈ PROJECT] Order Alert: ${order.orderNumber} ($${order.total.toLocaleString()})`;
+  const customerSubject = `DOUÈ PROJECT — Acquisition Confirmed #${order.orderNumber}`;
 
   const adminHtml = await generateOrderEmailHtml(order, 'admin');
   const customerHtml = await generateOrderEmailHtml(order, 'customer');

@@ -81,7 +81,7 @@ export default function Header({
                 overflow: 'hidden',
                 textOverflow: 'ellipsis'
               }}>
-                DOUE Project
+                DOUÈ Project
               </span>
             </Link>
           </div>
