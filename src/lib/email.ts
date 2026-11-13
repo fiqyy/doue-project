@@ -1,8 +1,10 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { Order } from '@/types';
 import { getAdminSettings, recordEmailNotification } from './db';
 
-// Generate luxury monochrome HTML email template
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Generate luxury monochrome HTML email template (keeps your exact design)
 export async function generateOrderEmailHtml(order: Order, recipientType: 'admin' | 'customer'): Promise<string> {
   const settings = await getAdminSettings();
   const isAdmin = recipientType === 'admin';
@@ -48,10 +50,7 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #09090b; padding: 40px 16px;">
     <tr>
       <td align="center">
-        <!-- Main Container -->
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; background-color: #121215; border: 1px solid #27272a; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);">
-          
-          <!-- Header Banner -->
           <tr>
             <td style="padding: 40px 32px 24px 32px; text-align: center; border-bottom: 1px solid #27272a; background: linear-gradient(180deg, #18181b 0%, #121215 100%);">
               <div style="font-family: 'Georgia', serif; font-size: 26px; font-weight: 400; letter-spacing: 0.25em; color: #fafafa; text-transform: uppercase;">
@@ -62,8 +61,6 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
               </div>
             </td>
           </tr>
-
-          <!-- Notification Pill & Message -->
           <tr>
             <td style="padding: 32px 32px 16px 32px;">
               ${isAdmin
@@ -86,8 +83,6 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
                     Your atelier garments are now being prepared in our workshop. Each piece undergoes hand inspection before being packaged in archival satin ribbon boxing.
                   </p>`
     }
-
-              <!-- Order Summary Meta Box -->
               <table width="100%" cellpadding="12" cellspacing="0" border="0" style="background-color: #18181b; border: 1px solid #27272a; border-radius: 6px; margin-bottom: 24px;">
                 <tr>
                   <td width="50%" style="border-right: 1px solid #27272a;">
@@ -106,8 +101,6 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
               </table>
             </td>
           </tr>
-
-          <!-- Items Table -->
           <tr>
             <td style="padding: 0 32px;">
               <div style="font-family: 'Courier New', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: #71717a; margin-bottom: 8px;">
@@ -118,8 +111,6 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
               </table>
             </td>
           </tr>
-
-          <!-- Financial Breakdown -->
           <tr>
             <td style="padding: 24px 32px;">
               <table width="100%" cellpadding="4" cellspacing="0" border="0" style="font-size: 13px; color: #a1a1aa;">
@@ -147,8 +138,6 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
               </table>
             </td>
           </tr>
-
-          <!-- Shipping Details -->
           <tr>
             <td style="padding: 0 32px 32px 32px;">
               <div style="background-color: #18181b; border: 1px solid #27272a; border-radius: 6px; padding: 20px;">
@@ -167,8 +156,6 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
               </div>
             </td>
           </tr>
-
-          <!-- Admin CTA or Customer Status link -->
           <tr>
             <td style="padding: 0 32px 40px 32px; text-align: center;">
               <a href="${isAdmin ? 'https://doueproject.com/admin?order=' + order.orderNumber : 'https://doueproject.com/track?order=' + order.orderNumber}"
@@ -177,8 +164,6 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
               </a>
             </td>
           </tr>
-
-          <!-- Footer -->
           <tr>
             <td style="padding: 24px 32px; border-top: 1px solid #27272a; text-align: center; background-color: #0e0e10;">
               <div style="font-size: 11px; color: #52525b; line-height: 1.6;">
@@ -186,7 +171,6 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
               </div>
             </td>
           </tr>
-
         </table>
       </td>
     </tr>
@@ -196,7 +180,7 @@ export async function generateOrderEmailHtml(order: Order, recipientType: 'admin
   `;
 }
 
-// Send real SMTP notifications for both admin and customer
+// Send emails using Resend API
 export async function dispatchOrderNotifications(order: Order): Promise<{
   adminSuccess: boolean;
   customerSuccess: boolean;
@@ -212,44 +196,40 @@ export async function dispatchOrderNotifications(order: Order): Promise<{
   const adminHtml = await generateOrderEmailHtml(order, 'admin');
   const customerHtml = await generateOrderEmailHtml(order, 'customer');
 
-  // Unified configuration fallback (supports both Env Vars and Database Settings)
-  const host = process.env.SMTP_HOST || settings.smtpHost || 'smtp.gmail.com';
-  const port = Number(process.env.SMTP_PORT || settings.smtpPort || 465);
-  const user = process.env.SMTP_USER || settings.smtpUser || 'doueprojecteg@gmail.com';
-  const pass = process.env.SMTP_PASS || (settings as any).smtpPass;
-  const senderName = settings.senderName || 'DOUE Atelier';
-  const senderEmail = process.env.SMTP_FROM || user;
-
-  if (!pass) {
-    console.error('SMTP Error: Missing SMTP_PASS / App Password in environment variables or database settings.');
-    return { adminSuccess: false, customerSuccess: false, error: 'Missing SMTP password configuration.' };
-  }
+  // Use Resend's verified domain sender or testing domain
+  // Note: Before verifying your domain in Resend, use "onboarding@resend.dev" as the sender.
+  // After verifying doueproject.com in Resend, change this to "orders@doueproject.com"
+  const senderEmail = process.env.RESEND_FROM || 'onboarding@resend.dev';
 
   try {
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465, // true for port 465 (SSL), false for port 587 (TLS)
-      auth: { user, pass }
+    // Send to Admin
+    const adminRes = await resend.emails.send({
+      from: `DOUE Atelier <${senderEmail}>`,
+      to: [adminEmail],
+      subject: adminSubject,
+      html: adminHtml,
+      text: `New order placed: ${order.orderNumber} for ${order.total.toLocaleString()} EGP.`
     });
 
-    // Send to Admin
-    await transporter.sendMail({
-      from: `"${senderName}" <${senderEmail}>`,
-      to: adminEmail,
-      subject: adminSubject,
-      html: adminHtml
-    });
+    if (adminRes.error) {
+      console.error('Resend Admin Email Error:', adminRes.error);
+    }
 
     // Send to Customer
-    await transporter.sendMail({
-      from: `"${senderName}" <${senderEmail}>`,
-      to: customerEmail,
+    const customerRes = await resend.emails.send({
+      from: `DOUE Atelier <${senderEmail}>`,
+      to: [customerEmail],
       subject: customerSubject,
-      html: customerHtml
+      html: customerHtml,
+      text: `Thank you for your order #${order.orderNumber}, ${order.customer.firstName}! Your total is ${order.total.toLocaleString()} EGP. Track your order: https://doueproject.com/track?order=${order.orderNumber}`
     });
 
-    // Log both as successfully sent via real SMTP
+    if (customerRes.error) {
+      console.error('Resend Customer Email Error:', customerRes.error);
+      return { adminSuccess: true, customerSuccess: false, error: customerRes.error.message };
+    }
+
+    // Log both in database
     await recordEmailNotification({
       orderId: order.id,
       orderNumber: order.orderNumber,
@@ -272,7 +252,7 @@ export async function dispatchOrderNotifications(order: Order): Promise<{
 
     return { adminSuccess: true, customerSuccess: true };
   } catch (err: any) {
-    console.error('Real SMTP delivery failed:', err);
+    console.error('Resend dispatch failed:', err);
     return {
       adminSuccess: false,
       customerSuccess: false,
